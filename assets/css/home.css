@@ -1,0 +1,381 @@
+/* =============================================================
+   home.css — Stat cards & Weekly Schedule
+   FULLY REBUILT v3 — all 4 issues resolved:
+   1. Job Vacancy card same colour as others
+   2. Chevron arrow perfectly centred & aesthetic
+   3. Weekly schedule cards stretch full width
+   4. Arrow icon CSS-drawn, precise, hover-animated
+   ============================================================= */
+
+/* ══════════════════════════════════════════
+   STAT CARDS
+══════════════════════════════════════════ */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+/* ── All three cards identical dark style ──
+   NOTE: no special treatment for :first-child
+   to keep visual parity across all three.      */
+.card {
+  background: linear-gradient(135deg, #1a1d2e 0%, #2d3252 100%);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1.75rem;
+  text-align: left;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+[data-theme="dark"] .card {
+  background: linear-gradient(135deg, #252a40 0%, #2e3558 100%);
+  border: 1px solid #3a4160;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* Accent gradient bar at top */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--brand) 0%, var(--accent) 100%);
+  z-index: 2;
+}
+
+/* Decorative translucent circle — bottom-right */
+.card::after {
+  content: "";
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.045);
+  bottom: -42px;
+  right: -28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
+}
+[data-theme="dark"] .card:hover {
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Number */
+.card h1 {
+  font-size: 2.75rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Label */
+.card p {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: rgba(255, 255, 255, 0.42);
+  position: relative;
+  z-index: 1;
+}
+
+/* Weekly Schedule card: accent-coloured number */
+.card.weekly-card h1 { color: var(--accent); }
+
+/* ══════════════════════════════════════════
+   CHEVRON BUTTON
+   Strategy: empty <span class="card-chevron">
+   We draw the arrow entirely with ::after pseudo.
+   The span itself is just a circle container.
+══════════════════════════════════════════ */
+.card-chevron {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 3; /* above the ::after decorative circle */
+
+  /* flex to centre the arrow pseudo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: background 0.2s ease, transform 0.2s ease;
+
+  /* hide any accidental text (HTML entities) */
+  font-size: 0;
+  color: transparent;
+  line-height: 0;
+}
+
+/* CSS chevron arrow — rotate a bordered box */
+.card-chevron::after {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-top: 2px solid rgba(255, 255, 255, 0.5);
+  border-right: 2px solid rgba(255, 255, 255, 0.5);
+  border-bottom: none;
+  border-left: none;
+  /* rotate 45° to make a right-pointing chevron
+     translate(-1px, 0) corrects the optical offset */
+  transform: rotate(45deg) translate(-1px, 1px);
+  transition: border-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.card:hover .card-chevron {
+  background: var(--accent);
+  transform: translateX(3px);
+}
+.card:hover .card-chevron::after {
+  border-color: #1a1d2e;
+}
+
+/* ══════════════════════════════════════════
+   WEEKLY SCHEDULE SECTION HEADING
+══════════════════════════════════════════ */
+.upcoming { width: 100%; }
+
+.upcoming h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.upcoming h3::before {
+  content: "";
+  width: 3px;
+  height: 1rem;
+  background: var(--accent);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════
+   UPCOMING CONTAINER
+══════════════════════════════════════════ */
+#upcomingContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+/* ══════════════════════════════════════════
+   UPCOMING EVENT CARD
+   
+   CRITICAL — why content was left-hugging:
+   The original homePage.js does:
+     card.style.display = "flex"     ← inline style
+   Inline style beats any CSS rule UNLESS we use
+   !important. So we must use !important here.
+   
+   Three-column grid:
+   - col 1 (1.4fr): company + activity + date
+   - col 2 (1fr):   status + days + time
+   - col 3 (3rem):  arrow button
+══════════════════════════════════════════ */
+.upcoming-card {
+  /* !important needed to override JS inline style */
+  display: grid !important;
+  grid-template-columns: 1.4fr 1fr 3rem;
+  align-items: stretch;
+
+  /* ensure full width */
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  min-height: 5rem;
+
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.upcoming-card:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--brand);
+}
+
+[data-theme="dark"] .upcoming-card {
+  background: #1e2235;
+  border-color: #3a4160;
+}
+[data-theme="dark"] .upcoming-card:hover {
+  border-color: var(--brand);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.38);
+}
+
+/* ── Col 1: Left — company, activity, date ── */
+.ws-left {
+  padding: 0.875rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid var(--border);
+  min-width: 0; /* allow text-overflow: ellipsis */
+}
+.ws-company {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ws-activity {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ws-date {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--brand);
+  margin-top: 0.3rem;
+}
+
+/* ── Col 2: Center — status, days, time badge ── */
+.ws-center {
+  padding: 0.875rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.18rem;
+  border-right: 1px solid var(--border);
+  min-width: 0;
+}
+.ws-status {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+}
+.ws-days {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--blue);
+}
+.ws-time {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent-dim);
+  color: #7a5200;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 2rem;
+  padding: 0.18rem 0.6rem;
+  margin-top: 0.1rem;
+  width: fit-content;
+}
+[data-theme="dark"] .ws-time {
+  color: var(--accent);
+  background: rgba(244, 185, 96, 0.15);
+}
+
+/* ── Col 3: Right — CSS-drawn arrow button ── */
+.ws-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-bg);
+  flex-shrink: 0;
+  border-left: 1px solid var(--border); /* belt-and-suspenders border */
+}
+[data-theme="dark"] .ws-right {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.ws-right .detail-arrow-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+}
+
+/* CSS-drawn arrow — works whether JS puts text or empty span */
+.ws-right .detail-arrow-icon {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-top: 2px solid var(--muted);
+  border-right: 2px solid var(--muted);
+  border-bottom: none;
+  border-left: none;
+  transform: rotate(45deg) translate(-1px, 1px);
+  opacity: 0.35;
+  transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+
+  /* hide any emoji/text the JS might put inside */
+  font-size: 0;
+  color: transparent;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.upcoming-card:hover .ws-right .detail-arrow-icon {
+  border-color: var(--accent);
+  opacity: 1;
+  transform: rotate(45deg) translate(0px, 0px);
+}
+
+/* ══════════════════════════════════════════
+   EMPTY STATE
+══════════════════════════════════════════ */
+.no-events-msg,
+.upcoming-empty {
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+[data-theme="dark"] .no-events-msg,
+[data-theme="dark"] .upcoming-empty {
+  background: #1e2235;
+  border-color: #3a4160;
+}

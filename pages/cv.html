@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My CV</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="../assets/css/base.css" />
+    <link rel="stylesheet" href="../assets/css/layout.css" />
+    <link rel="stylesheet" href="../assets/css/sidebar.css" />
+    <link rel="stylesheet" href="../assets/css/modal.css" />
+    <link rel="stylesheet" href="../assets/css/cv.css" />
+    <link rel="stylesheet" href="../assets/css/mobile.css" />
+    <link rel="stylesheet" href="../assets/css/theme.css" />
+    <script>
+      (function() {
+        const saved = localStorage.getItem('theme');
+        if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="left-section">
+        <div id="toggleBtn">☰</div>
+        <div class="logo">Career<span>Tracker</span></div>
+      </div>
+      <div class="right-section">
+        <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+        <div class="profile" id="profileBtn">
+          <span id="topbarDisplayName">-</span>
+          <div class="avatar" id="topbarAvatar"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="menu">
+        <a href="home.html" class="menu-item" data-title="Home">🏠 <span>Home</span></a>
+        <a href="applied.html" class="menu-item" data-title="Applied">📄 <span>Applied</span></a>
+        <a href="jobs.html" class="menu-item" data-title="Job Vacancy">📁 <span>Job Vacancy</span></a>
+      </div>
+    </aside>
+    <div id="sidebarOverlay"></div>
+
+    <!-- PROFILE DROPDOWN -->
+    <div class="profile-dropdown" id="dropdown">
+      <div>👤 Profile</div>
+      <div id="cvLink">📄 My CV</div>
+      <hr />
+      <div class="logout">🚪 Sign Out</div>
+    </div>
+
+    <!-- MAIN -->
+    <main class="main" id="main">
+      <section class="cv-section" style="padding: 2rem">
+        <h1>My CV</h1>
+
+        <!-- Selector & viewer -->
+        <div id="viewerSection" style="margin-top: 1rem; display: none">
+          <select id="cvSelector" style="width: 100%; max-width: 400px"></select>
+          <div id="viewerContainer" style="margin-top: 1rem">
+            <iframe id="cvViewer"
+              style="width:100%;height:600px;display:none;border:1px solid #ccc;"></iframe>
+          </div>
+        </div>
+
+        <!-- Placeholder -->
+        <div id="cvContainer" style="margin-top: 1rem"></div>
+
+        <!-- Bottom: choose file & delete -->
+        <div id="bottomSection" style="margin-top:1rem;display:flex;justify-content:space-between;width:100%;">
+          <div id="chooserArea" style="flex:1;text-align:left">
+            <label for="cvInput" id="cvChooseLabel" class="btn"
+              style="display:inline-block;width:100%;max-width:400px;border:2px dashed #ccc;padding:1rem;cursor:pointer;">
+              📁 Choose CV files
+            </label>
+            <input type="file" id="cvInput" accept="application/pdf" multiple style="display:none" />
+            <div style="margin-top:0.5rem">
+              <button id="cvUploadBtn" class="btn save" style="max-width:400px">Upload</button>
+            </div>
+          </div>
+          <div id="trashArea" style="flex:none;text-align:right">
+            <span id="deleteCvBtn" title="Delete selected CV"
+              style="cursor:pointer;color:#e74c3c;font-size:1.5rem">🗑️</span>
+          </div>
+        </div>
+
+        <!-- Naming modal -->
+        <div id="nameModal" class="modal" style="display:none">
+          <div class="modal-content">
+            <span class="close-name">&times;</span>
+            <h2>Name CV Files</h2>
+            <div id="nameForm"></div>
+            <button id="nameConfirm" class="btn save">Confirm</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="../assets/js/supabaseClient.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/ui.js"></script>
+    <script src="../assets/js/dataService.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/cvPage.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('darkModeToggle');
+        const html = document.documentElement;
+        function updateIcon() {
+          btn.textContent = html.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+        }
+        updateIcon();
+        btn.addEventListener('click', function() {
+          const isDark = html.getAttribute('data-theme') === 'dark';
+          if (isDark) { html.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+          else { html.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+          updateIcon();
+        });
+      });
+    </script>
+  </body>
+</html>

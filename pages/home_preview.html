@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Home Preview — CareerTracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ── Variables ── */
+:root{
+  --brand:#5c667a;--accent:#f4b960;--accent-dim:rgba(244,185,96,.12);
+  --blue:#3b82f6;--dark:#1a1d2e;
+  --bg:#f0f2f5;--surface:#fff;--card-bg:#f8f9fb;--border:#e2e6ed;
+  --text:#2c3344;--muted:#6b7280;
+  --radius-lg:16px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:0 4px 16px rgba(0,0,0,.08);
+}
+[data-theme="dark"]{
+  --brand:#7b8ba3;--accent:#f4b960;--accent-dim:rgba(244,185,96,.15);
+  --blue:#60a5fa;
+  --bg:#0f1117;--surface:#1a1d2e;--card-bg:#1e2235;--border:#2a2f45;
+  --text:#e2e8f0;--muted:#8892a4;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 16px rgba(0,0,0,.35);
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
+body{background:var(--bg);color:var(--text);padding:2rem;transition:background .3s,color .3s;}
+
+/* toggle */
+.toggle-btn{position:fixed;top:1rem;right:1rem;padding:.4rem .8rem;border:1px solid var(--border);
+  border-radius:2rem;background:var(--surface);color:var(--text);cursor:pointer;font-size:.85rem;}
+
+/* ── stat cards ── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.75rem;}
+.card{
+  background:linear-gradient(135deg,#1a1d2e 0%,#2d3252 100%);
+  border-radius:var(--radius-lg);padding:1.5rem 1.75rem;
+  position:relative;overflow:hidden;cursor:pointer;text-decoration:none;
+  display:block;width:100%;box-sizing:border-box;
+  box-shadow:0 4px 20px rgba(0,0,0,.2);
+  transition:transform .22s,box-shadow .22s;
+}
+[data-theme="dark"] .card{
+  background:linear-gradient(135deg,#252a40 0%,#2e3558 100%);
+  border:1px solid #3a4160;box-shadow:0 4px 24px rgba(0,0,0,.5);
+}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--brand),var(--accent));z-index:2;}
+.card::after{content:"";position:absolute;width:130px;height:130px;border-radius:50%;
+  background:rgba(255,255,255,.045);bottom:-42px;right:-28px;pointer-events:none;z-index:0;}
+.card:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(0,0,0,.25);}
+.card h1{font-size:2.75rem;font-weight:800;color:#fff;line-height:1;letter-spacing:-.03em;
+  margin-bottom:.5rem;position:relative;z-index:1;}
+.card p{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.9px;
+  color:rgba(255,255,255,.42);position:relative;z-index:1;}
+.card.weekly-card h1{color:var(--accent);}
+/* force job vacancy same colour */
+.stats .card:first-child{
+  background:linear-gradient(135deg,#1a1d2e 0%,#2d3252 100%) !important;
+}
+[data-theme="dark"] .stats .card:first-child{
+  background:linear-gradient(135deg,#252a40 0%,#2e3558 100%) !important;
+  border:1px solid #3a4160 !important;
+}
+
+/* ── chevron ── */
+.card-chevron{
+  position:absolute;right:1.25rem;bottom:1.25rem;
+  width:2rem;height:2rem;border-radius:50%;
+  background:rgba(255,255,255,.1);z-index:3;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s,transform .2s;
+  font-size:0;color:transparent;line-height:0;
+}
+.card-chevron::after{
+  content:"";display:block;width:6px;height:6px;
+  border-top:2px solid rgba(255,255,255,.5);border-right:2px solid rgba(255,255,255,.5);
+  transform:rotate(45deg) translate(-1px,1px);
+  transition:border-color .2s;flex-shrink:0;
+}
+.card:hover .card-chevron{background:var(--accent);transform:translateX(3px);}
+.card:hover .card-chevron::after{border-color:#1a1d2e;}
+
+/* ── section heading ── */
+.upcoming{width:100%;}
+.upcoming h3{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.875rem;
+  display:flex;align-items:center;gap:.5rem;}
+.upcoming h3::before{content:"";width:3px;height:1rem;background:var(--accent);
+  border-radius:2px;flex-shrink:0;}
+
+/* ── container ── */
+#upcomingContainer{display:flex;flex-direction:column;gap:.75rem;width:100%;}
+
+/* ── event card ── */
+.upcoming-card{
+  display:grid !important;
+  grid-template-columns:1.4fr 1fr 3rem;
+  align-items:stretch;
+  width:100%;min-width:0;box-sizing:border-box;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;
+  box-shadow:var(--shadow-sm);min-height:5rem;
+  cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;
+}
+.upcoming-card:hover{transform:translateX(4px);box-shadow:var(--shadow-md);border-color:var(--brand);}
+[data-theme="dark"] .upcoming-card{background:#1e2235;border-color:#3a4160;}
+[data-theme="dark"] .upcoming-card:hover{border-color:var(--brand);box-shadow:0 6px 24px rgba(0,0,0,.38);}
+
+.ws-left{padding:.875rem 1.25rem;display:flex;flex-direction:column;justify-content:center;
+  border-right:1px solid var(--border);min-width:0;}
+.ws-company{font-size:.9rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ws-activity{font-size:.8rem;color:var(--muted);margin-top:.1rem;}
+.ws-date{font-size:.75rem;font-weight:600;color:var(--brand);margin-top:.3rem;}
+
+.ws-center{padding:.875rem 1.25rem;display:flex;flex-direction:column;justify-content:center;
+  gap:.18rem;border-right:1px solid var(--border);min-width:0;}
+.ws-status{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);}
+.ws-days{font-size:.85rem;font-weight:700;color:var(--blue);}
+.ws-time{display:inline-flex;align-items:center;background:var(--accent-dim);color:#7a5200;
+  font-size:.72rem;font-weight:700;border-radius:2rem;padding:.18rem .6rem;margin-top:.1rem;width:fit-content;}
+[data-theme="dark"] .ws-time{color:var(--accent);background:rgba(244,185,96,.15);}
+
+.ws-right{display:flex;align-items:center;justify-content:center;
+  background:var(--card-bg);flex-shrink:0;border-left:1px solid var(--border);}
+[data-theme="dark"] .ws-right{background:rgba(255,255,255,.025);}
+.ws-right a{display:flex;align-items:center;justify-content:center;
+  width:100%;height:100%;text-decoration:none;}
+.detail-arrow-icon{
+  display:block;width:7px;height:7px;
+  border-top:2px solid var(--muted);border-right:2px solid var(--muted);
+  transform:rotate(45deg) translate(-1px,1px);
+  opacity:.35;transition:opacity .2s,border-color .2s,transform .2s;
+  font-size:0;color:transparent;overflow:hidden;flex-shrink:0;
+}
+.upcoming-card:hover .detail-arrow-icon{
+  border-color:var(--accent);opacity:1;transform:rotate(45deg) translate(0,0);
+}
+</style>
+</head>
+<body>
+
+<button class="toggle-btn" onclick="
+  var h=document.documentElement;
+  if(h.getAttribute('data-theme')==='dark'){h.removeAttribute('data-theme');this.textContent='🌙 Dark';}
+  else{h.setAttribute('data-theme','dark');this.textContent='☀️ Light';}
+">🌙 Dark</button>
+
+<!-- STAT CARDS -->
+<section class="stats">
+  <a href="#" class="card">
+    <h1>7</h1>
+    <p>Job Vacancy</p>
+    <span class="card-chevron"></span>
+  </a>
+  <div class="card weekly-card">
+    <h1>3</h1>
+    <p>Weekly Schedule</p>
+  </div>
+  <a href="#" class="card">
+    <h1>11</h1>
+    <p>Active Application</p>
+    <span class="card-chevron"></span>
+  </a>
+</section>
+
+<!-- WEEKLY SCHEDULE -->
+<section class="upcoming">
+  <h3>Weekly Schedule</h3>
+  <div id="upcomingContainer">
+
+    <div class="upcoming-card">
+      <div class="ws-left">
+        <div class="ws-company">Paragorncorp</div>
+        <div class="ws-activity">Assessment Test</div>
+        <div class="ws-date">3/1/2026</div>
+      </div>
+      <div class="ws-center">
+        <div class="ws-status">Upcoming</div>
+        <div class="ws-days">2 Day(s) left</div>
+        <div class="ws-time">23:59</div>
+      </div>
+      <div class="ws-right">
+        <a href="#" class="detail-arrow-link">
+          <span class="detail-arrow-icon"></span>
+        </a>
+      </div>
+    </div>
+
+    <div class="upcoming-card">
+      <div class="ws-left">
+        <div class="ws-company">PT OKI Pulp &amp; Paper</div>
+        <div class="ws-activity">Document Submission</div>
+        <div class="ws-date">3/2/2026</div>
+      </div>
+      <div class="ws-center">
+        <div class="ws-status">Upcoming</div>
+        <div class="ws-days">2 Day(s) left</div>
+        <div class="ws-time">08:00</div>
+      </div>
+      <div class="ws-right">
+        <a href="#" class="detail-arrow-link">
+          <span class="detail-arrow-icon"></span>
+        </a>
+      </div>
+    </div>
+
+    <div class="upcoming-card">
+      <div class="ws-left">
+        <div class="ws-company">Wings Company</div>
+        <div class="ws-activity">Sosialisasi &amp; Tes Assessment</div>
+        <div class="ws-date">3/5/2026</div>
+      </div>
+      <div class="ws-center">
+        <div class="ws-status">Upcoming</div>
+        <div class="ws-days">5 Day(s) left</div>
+        <div class="ws-time">08:30</div>
+      </div>
+      <div class="ws-right">
+        <a href="#" class="detail-arrow-link">
+          <span class="detail-arrow-icon"></span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>

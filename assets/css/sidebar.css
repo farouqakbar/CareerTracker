@@ -1,0 +1,70 @@
+/* =============================================================
+   sidebar.css — Sidebar navigation & menu items
+   Import order: 3rd
+   ============================================================= */
+
+.sidebar {
+  position: fixed;
+  top: var(--topbar-h);
+  left: -100vw;
+  width: var(--sidebar-w);
+  height: calc(100vh - var(--topbar-h));
+  background: var(--dark);
+  padding: 1rem 0.75rem;
+  transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow-y: auto;
+}
+
+[data-theme="dark"] .sidebar {
+  background: #12151f;
+  border-right: 1px solid var(--border);
+}
+
+.sidebar.open { left: 0; }
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.875rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  position: relative;
+  white-space: nowrap;
+}
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+/* State aktif */
+.menu-item.active {
+  background: rgba(244, 185, 96, 0.15);
+  color: var(--accent);
+  font-weight: 600;
+}
+.menu-item.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 25%;
+  bottom: 25%;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 0 4px 4px 0;
+}

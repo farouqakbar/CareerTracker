@@ -1,0 +1,15 @@
+/* ============================================================
+   PATCH — append to styles.css
+   1. Stage timeline colors: hijau=terlewati, biru=terdekat, abu-abu=akan datang
+   2. Job Vacancy card warna sama dengan Active Application
+   ============================================================ */
+
+/* Stage timeline — OVERRIDE previous colors */
+.timeline .step.done     { background: #22c55e !important; }  /* hijau — terlewati */
+.timeline .step.current  { background: #3b82f6 !important; }  /* biru  — terdekat  */
+.timeline .step.upcoming { background: #9ca3af !important; }  /* abu-abu — akan datang */
+
+/* Job Vacancy card — samakan warna dgn Active Application */
+.stats .card:first-child {
+  background: #aeb8cb;
+}

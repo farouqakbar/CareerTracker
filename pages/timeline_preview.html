@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Timeline Preview — CareerTracker v4</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ── Variables ── */
+:root {
+  --brand:#5c667a; --brand-dark:#4a5268; --accent:#f4b960; --accent-dim:rgba(244,185,96,.12);
+  --green:#22c55e; --blue:#3b82f6; --red:#ef4444; --dark:#1a1d2e;
+  --bg:#f0f2f5; --surface:#fff; --card-bg:#f8f9fb; --border:#e2e6ed;
+  --text:#2c3344; --muted:#6b7280;
+  --radius-sm:6px; --radius-md:12px; --radius-lg:16px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:0 4px 16px rgba(0,0,0,.08);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.1);
+}
+[data-theme="dark"] {
+  --brand:#7b8ba3; --brand-dark:#6b7a91; --accent:#f4b960; --accent-dim:rgba(244,185,96,.15);
+  --green:#22c55e; --blue:#60a5fa; --red:#f87171; --dark:#f0f4ff;
+  --bg:#0f1117; --surface:#1a1d2e; --card-bg:#1e2235; --border:#2a2f45;
+  --text:#e2e8f0; --muted:#8892a4;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.3); --shadow-md:0 4px 16px rgba(0,0,0,.35);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.4);
+}
+
+*,*::before,*::after { margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif; }
+body { background:var(--bg);color:var(--text);padding:2rem;min-height:100vh;transition:background .3s,color .3s; }
+
+/* controls */
+.controls {
+  display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap;
+}
+.controls button {
+  padding:.4rem 1rem;border:1.5px solid var(--border);border-radius:2rem;
+  background:var(--surface);color:var(--text);cursor:pointer;font-size:.8rem;
+  font-weight:600;font-family:Poppins,sans-serif;transition:all .2s;
+}
+.controls button:hover { border-color:var(--brand);color:var(--brand); }
+.controls button.active { background:var(--brand);color:white;border-color:var(--brand); }
+
+h2 { font-size:1rem;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:1rem;margin-top:1.5rem; }
+h2:first-of-type { margin-top:0; }
+
+/* ══════════════════════════════════════════
+   APP SUMMARY CARD
+══════════════════════════════════════════ */
+.app-summary {
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:1.125rem 1.5rem;
+  margin-bottom:1.25rem;box-shadow:var(--shadow-sm);position:relative;gap:.75rem;
+}
+.company-name { flex:1;min-width:0; }
+.company-name h1 {
+  font-size:1.25rem;font-weight:700;color:var(--dark);letter-spacing:-.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.company-name h3 {
+  font-size:.8rem;font-weight:500;color:var(--muted);margin-top:.2rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.detail-actions { display:flex;align-items:center;gap:.5rem;flex-shrink:0;position:relative; }
+.detail-actions .edit-stages,
+.detail-actions .add-btn,
+.detail-actions .select-company {
+  width:2.25rem;height:2.25rem;display:flex;justify-content:center;align-items:center;
+  font-size:1rem;cursor:pointer;border-radius:50%;transition:all .2s;
+  font-weight:600;border:none;background:transparent;
+}
+.detail-actions .edit-stages { background:rgba(59,130,246,.1);color:var(--blue); }
+.detail-actions .edit-stages:hover { background:var(--blue);color:white; }
+.detail-actions .add-btn { background:rgba(34,197,94,.1);color:var(--green);font-size:1.35rem; }
+.detail-actions .add-btn:hover { background:var(--green);color:white; }
+.detail-actions .select-company { background:rgba(244,185,96,.15);color:#92680a;font-size:.875rem; }
+.detail-actions .select-company:hover { background:var(--accent);color:var(--dark); }
+[data-theme="dark"] .detail-actions .select-company { color:var(--accent); }
+
+/* ══════════════════════════════════════════
+   TIMELINE (NEW v4)
+══════════════════════════════════════════ */
+.timeline {
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:1.5rem 1.5rem 1.75rem;margin:0 0 1.25rem;box-shadow:var(--shadow-sm);
+  width:100%;box-sizing:border-box;overflow-x:auto;overflow-y:visible;
+  -webkit-overflow-scrolling:touch;
+}
+[data-theme="dark"] .timeline { background:#1e2235;border-color:#3a4160; }
+
+.timeline-columns {
+  display:flex;flex-direction:row;align-items:flex-end;justify-content:flex-start;
+  gap:0;width:max-content;min-width:100%;position:relative;
+}
+
+.step-cell {
+  display:flex;flex-direction:column;align-items:center;
+  width:108px;flex:0 0 108px;position:relative;
+}
+
+/* connector line */
+.step-cell:not(:last-child)::after {
+  content:"";position:absolute;bottom:24px;left:calc(50% + 24px);
+  width:calc(108px - 48px);height:2px;background:var(--border);z-index:0;transition:background .3s;
+}
+.step-cell.done-cell:not(:last-child)::after { background:var(--green);opacity:.35; }
+[data-theme="dark"] .step-cell:not(:last-child)::after { background:#3a4160; }
+
+/* label — always above */
+.step-label {
+  min-height:3.25rem;width:100%;padding:0 6px 6px;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  text-align:center;box-sizing:border-box;
+}
+.step-label .step-name {
+  font-size:.72rem;font-weight:600;color:var(--text);line-height:1.25;
+  word-break:break-word;display:-webkit-box;-webkit-line-clamp:2;
+  -webkit-box-orient:vertical;overflow:hidden;
+}
+.step-label .step-date {
+  font-size:.63rem;font-weight:500;color:var(--muted);margin-top:2px;line-height:1.3;
+}
+.step-cell.current-cell .step-name { color:var(--blue);font-weight:700; }
+.step-cell.current-cell .step-date { color:var(--blue);opacity:.8; }
+.step-cell.done-cell .step-name { color:var(--muted); }
+.step-cell.done-cell .step-date { opacity:.65; }
+
+/* circle */
+.step {
+  width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;
+  max-width:48px!important;max-height:48px!important;border-radius:50%!important;
+  flex:none!important;padding:0!important;box-sizing:border-box!important;position:relative;z-index:1;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  cursor:pointer;transition:transform .18s,box-shadow .18s,background .25s;box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+.step:hover { transform:scale(1.12) translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.18); }
+
+.step.done    { background:var(--green)!important;box-shadow:0 2px 10px rgba(34,197,94,.3)!important; }
+.step.current { background:var(--blue)!important;box-shadow:0 2px 14px rgba(59,130,246,.4)!important; }
+.step.upcoming { background:#c5cad4!important;box-shadow:0 2px 6px rgba(0,0,0,.1)!important; }
+
+[data-theme="dark"] .step.done    { background:#16a34a!important; }
+[data-theme="dark"] .step.current { background:#2563eb!important; }
+[data-theme="dark"] .step.upcoming { background:#374151!important;box-shadow:none!important; }
+
+.step.active.done    { box-shadow:0 0 0 3px var(--surface),0 0 0 6px var(--green),0 6px 16px rgba(34,197,94,.3)!important; transform:scale(1.14) translateY(-2px); }
+.step.active.current { box-shadow:0 0 0 3px var(--surface),0 0 0 6px var(--blue),0 6px 16px rgba(59,130,246,.35)!important; transform:scale(1.14) translateY(-2px); }
+.step.active.upcoming { box-shadow:0 0 0 3px var(--surface),0 0 0 6px #c5cad4,0 4px 12px rgba(0,0,0,.15)!important; transform:scale(1.14) translateY(-2px); }
+
+.step-number {
+  width:100%!important;height:100%!important;padding:0!important;border-radius:50%!important;
+  display:flex!important;justify-content:center!important;align-items:center!important;
+  font-weight:800;font-size:.95rem;line-height:1;color:white;letter-spacing:-.02em;
+  position:relative;z-index:2;background:transparent;
+}
+.step.upcoming .step-number { color:rgba(255,255,255,.85); }
+
+/* empty state */
+.empty-stage {
+  text-align:center;color:var(--muted);padding:2rem 1.5rem;font-size:.875rem;font-style:italic;
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+}
+.empty-stage::before {
+  content:"＋";font-size:2rem;font-style:normal;font-weight:300;color:var(--border);display:block;
+}
+
+/* ══════════════════════════════════════════
+   STAGE BOX
+══════════════════════════════════════════ */
+.stage-box {
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  overflow:hidden;box-shadow:var(--shadow-sm);position:relative;margin-top:1rem;
+}
+.stage-box h3 {
+  background:linear-gradient(90deg,var(--brand) 0%,var(--brand-dark) 100%);
+  color:white;padding:.7rem 1.25rem;font-size:.875rem;font-weight:700;letter-spacing:.2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:3rem;
+}
+[data-theme="dark"] .stage-box h3 { background:linear-gradient(90deg,#3d4559 0%,#2d3252 100%); }
+
+.note-edit {
+  position:absolute;top:.65rem;right:1.1rem;cursor:pointer;font-size:1rem;
+  color:rgba(255,255,255,.75);transition:color .15s,transform .15s;user-select:none;z-index:3;
+}
+.note-edit:hover { color:white;transform:scale(1.15); }
+
+.stage-box p {
+  padding:.75rem 1.25rem 0;font-size:.85rem;color:var(--text);
+  display:flex;align-items:flex-start;gap:.5rem;line-height:1.4;
+}
+.stage-box p strong {
+  color:var(--muted);font-weight:700;font-size:.72rem;text-transform:uppercase;
+  letter-spacing:.5px;min-width:80px;flex-shrink:0;padding-top:1px;
+}
+#detailDeadline { color:var(--text);font-weight:500; }
+
+.stage-box .notes {
+  margin:.625rem 1.25rem 1.25rem;padding:.875rem 1rem;
+  background:var(--card-bg);border-radius:var(--radius-md);
+  font-size:.875rem;color:var(--text);line-height:1.7;
+  border:1px solid var(--border);min-height:72px;transition:border-color .2s;
+}
+.stage-box .notes:hover { border-color:var(--brand); }
+.stage-box .notes p { padding:0;font-size:inherit;line-height:inherit;color:inherit;display:block; }
+.stage-box .notes .empty-note { color:var(--muted);font-style:italic;font-size:.8rem; }
+
+[data-theme="dark"] .stage-box { background:#1e2235;border-color:#3a4160; }
+[data-theme="dark"] .stage-box .notes { background:#252a40;border-color:#3a4160;color:var(--text); }
+
+/* ── Danger zone ── */
+.danger-zone {
+  margin-top:2rem;padding:1.25rem 1.5rem;background:rgba(239,68,68,.04);
+  border:1px solid rgba(239,68,68,.18);border-radius:var(--radius-lg);
+}
+.danger-zone h4 {
+  font-size:.8rem;font-weight:700;color:var(--red);margin-bottom:.4rem;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.danger-zone p { font-size:.8rem;color:var(--muted);margin-bottom:1rem;padding:0; }
+.btn-delete-app {
+  display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1.25rem;
+  background:rgba(239,68,68,.08);color:var(--red);border:1.5px solid rgba(239,68,68,.25);
+  border-radius:2rem;cursor:pointer;font-size:.875rem;font-weight:600;
+  font-family:Poppins,sans-serif;transition:all .2s;
+}
+.btn-delete-app:hover {
+  background:var(--red);color:white;border-color:var(--red);
+  transform:translateY(-1px);box-shadow:0 4px 14px rgba(239,68,68,.28);
+}
+[data-theme="dark"] .danger-zone { background:rgba(248,113,113,.06);border-color:rgba(248,113,113,.22); }
+</style>
+</head>
+<body>
+
+<!-- Controls -->
+<div class="controls">
+  <button onclick="toggleTheme(this)" class="active">🌙 Dark Mode</button>
+  <button onclick="addStage()">+ Add Stage</button>
+  <button onclick="removeStage()">− Remove Stage</button>
+  <span style="color:var(--muted);font-size:.8rem;margin-left:.5rem">Click a stage circle to see detail below ↓</span>
+</div>
+
+<!-- App Summary -->
+<h2>App Summary + Timeline</h2>
+<div class="app-summary">
+  <div class="company-name">
+    <h1 id="companyName">PT OKI Pulp &amp; Paper</h1>
+    <h3>Management Trainee — Human Resources</h3>
+  </div>
+  <div class="detail-actions">
+    <div class="edit-stages" title="Edit stages">✎</div>
+    <div class="add-btn" title="Add stage" onclick="addStage()">+</div>
+    <div class="select-company" title="Switch application">▼</div>
+  </div>
+</div>
+
+<!-- Timeline -->
+<div class="timeline" id="timeline">
+  <div class="timeline-columns" id="timelineCols"></div>
+</div>
+
+<!-- Stage Box -->
+<div class="stage-box" id="stageBox" style="display:none">
+  <h3 id="stageBoxTitle">—</h3>
+  <span class="note-edit" title="Edit note">✎</span>
+  <p><strong>Deadline</strong><span id="detailDeadline">—</span></p>
+  <div class="notes" id="stageNotes"></div>
+</div>
+
+<!-- Danger Zone -->
+<div class="danger-zone" style="max-width:600px">
+  <h4>⚠️ Danger Zone</h4>
+  <p>Permanently delete this application and all its stage data. This action cannot be undone.</p>
+  <button class="btn-delete-app">🗑️ Delete Application</button>
+</div>
+
+<script>
+// ── Mock data ──
+const stages = [
+  { name:"Document Screening", date:"2026-02-03", time:"08:00", notes:"Kirim dokumen via email. Pastikan scan CV dan transkrip nilai." },
+  { name:"FGD",                 date:"2026-02-14", time:"08:30", notes:"Focus Group Discussion. Lokasi: Gedung A Lt.3." },
+  { name:"Interview User",      date:"2026-02-23", time:"08:30", notes:"Interview langsung dengan HRD dan user." },
+  { name:"Document Submission", date:"2026-03-02", time:"08:00", notes:"Pengumpulan dokumen asli.\n- Ijazah & transkrip\n- KTP\n- Surat kesehatan" },
+  { name:"Offering Letter",     date:"2026-03-10", time:"10:00", notes:"" },
+  { name:"Medical Check Up",    date:"2026-03-17", time:"07:30", notes:"" },
+];
+
+let activeIdx = 3; // "Document Submission" → current
+
+function getStatus(s, idx) {
+  const now = new Date();
+  // Find nearest upcoming
+  let minDiff = Infinity, nearestIdx = -1;
+  stages.forEach((st, i) => {
+    if (st.date) {
+      const diff = new Date(st.date + (st.time ? "T"+st.time:"")) - now;
+      if (diff >= 0 && diff < minDiff) { minDiff = diff; nearestIdx = i; }
+    }
+  });
+  if (!s.date) return "upcoming";
+  const dt = new Date(s.date + (s.time ? "T"+s.time:""));
+  if (dt < now) return "done";
+  if (idx === nearestIdx) return "current";
+  return "upcoming";
+}
+
+function formatDate(d, t) {
+  if (!d) return "—";
+  const date = new Date(d);
+  const fd = date.toLocaleDateString("id-ID", { day:"numeric", month:"short", year:"numeric" });
+  return fd + (t ? ", "+t : "");
+}
+
+function formatDeadline(d, t) {
+  if (!d) return "—";
+  const date = new Date(d);
+  const fd = date.toLocaleDateString("id-ID", { weekday:"short", day:"numeric", month:"long", year:"numeric" });
+  return fd + (t ? ", "+t : "");
+}
+
+function render() {
+  const cols = document.getElementById("timelineCols");
+  cols.innerHTML = "";
+
+  stages.forEach((s, idx) => {
+    const status = getStatus(s, idx);
+
+    const cell = document.createElement("div");
+    cell.className = "step-cell " + status + "-cell";
+
+    const label = document.createElement("div");
+    label.className = "step-label";
+    label.innerHTML = `
+      <div class="step-name">${s.name}</div>
+      <div class="step-date">${formatDate(s.date, s.time)}</div>
+    `;
+
+    const step = document.createElement("div");
+    step.className = "step " + status + (idx === activeIdx ? " active" : "");
+    step.innerHTML = `<span class="step-number">${idx+1}</span>`;
+    step.addEventListener("click", () => {
+      activeIdx = idx;
+      render();
+      showDetail(idx);
+    });
+
+    cell.appendChild(label);
+    cell.appendChild(step);
+    cols.appendChild(cell);
+  });
+
+  if (activeIdx >= 0 && activeIdx < stages.length) showDetail(activeIdx);
+}
+
+function showDetail(idx) {
+  const s = stages[idx];
+  document.getElementById("stageBox").style.display = "block";
+  document.getElementById("stageBoxTitle").textContent = s.name;
+  document.getElementById("detailDeadline").textContent = formatDeadline(s.date, s.time);
+  const notes = document.getElementById("stageNotes");
+  if (s.notes) {
+    notes.innerHTML = `<p style="white-space:pre-wrap">${s.notes}</p>`;
+  } else {
+    notes.innerHTML = `<p class="empty-note">Belum ada catatan. Klik ✎ untuk menambahkan.</p>`;
+  }
+}
+
+function toggleTheme(btn) {
+  const h = document.documentElement;
+  if (h.getAttribute("data-theme") === "dark") {
+    h.removeAttribute("data-theme");
+    btn.textContent = "🌙 Dark Mode";
+    btn.classList.remove("active");
+  } else {
+    h.setAttribute("data-theme","dark");
+    btn.textContent = "☀️ Light Mode";
+    btn.classList.add("active");
+  }
+}
+
+function addStage() {
+  stages.push({ name:"New Stage " + (stages.length+1), date:"", time:"", notes:"" });
+  render();
+}
+
+function removeStage() {
+  if (stages.length > 1) {
+    stages.pop();
+    if (activeIdx >= stages.length) activeIdx = stages.length - 1;
+    render();
+  }
+}
+
+// Init
+render();
+showDetail(activeIdx);
+</script>
+</body>
+</html>

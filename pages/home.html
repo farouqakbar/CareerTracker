@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareerTracker - Home</title>
+
+    <!-- Apply saved theme BEFORE first paint to prevent flash -->
+    <script>
+      (function () {
+        if (localStorage.getItem("theme") === "dark")
+          document.documentElement.setAttribute("data-theme", "dark");
+      })();
+    </script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="../assets/css/base.css" />
+    <link rel="stylesheet" href="../assets/css/layout.css" />
+    <link rel="stylesheet" href="../assets/css/sidebar.css" />
+    <link rel="stylesheet" href="../assets/css/modal.css" />
+    <link rel="stylesheet" href="../assets/css/home.css" />
+    <link rel="stylesheet" href="../assets/css/mobile.css" />
+    <link rel="stylesheet" href="../assets/css/theme.css" />
+  </head>
+  <body>
+
+    <!-- ══════ TOPBAR ══════ -->
+    <header class="topbar">
+      <div class="left-section">
+        <div id="toggleBtn">☰</div>
+        <div class="logo">Career<span>Tracker</span></div>
+      </div>
+      <div class="right-section">
+        <button id="darkModeToggle" title="Switch to dark mode" aria-label="Toggle dark mode">🌙</button>
+        <div class="profile" id="profileBtn">
+          <span id="topbarDisplayName">-</span>
+          <div class="avatar" id="topbarAvatar"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ══════ SIDEBAR ══════ -->
+    <aside class="sidebar" id="sidebar">
+      <div class="menu">
+        <a href="home.html"    class="menu-item active" data-title="Home">🏠 <span>Home</span></a>
+        <a href="applied.html" class="menu-item"         data-title="Applied">📄 <span>Applied</span></a>
+        <a href="jobs.html"    class="menu-item"         data-title="Job Vacancy">📁 <span>Job Vacancy</span></a>
+      </div>
+    </aside>
+    <div id="sidebarOverlay"></div>
+
+    <!-- ══════ PROFILE DROPDOWN ══════ -->
+    <div class="profile-dropdown" id="dropdown">
+      <div>👤 Profile</div>
+      <div id="cvLink">📄 My CV</div>
+      <hr />
+      <div class="logout">🚪 Sign Out</div>
+    </div>
+
+    <!-- ══════ MAIN ══════ -->
+    <main class="main" id="main">
+
+      <!-- Stat cards — NO inline styles, pure CSS -->
+      <section class="stats">
+        <a href="jobs.html" class="card" id="jobVacancyCard">
+          <h1 id="jobCount">-</h1>
+          <p>Job Vacancy</p>
+          <span class="card-chevron"></span>
+        </a>
+
+        <div class="card weekly-card">
+          <h1 id="weeklyCount">0</h1>
+          <p>Weekly Schedule</p>
+        </div>
+
+        <a href="applied.html" class="card">
+          <h1 id="activeCount">0</h1>
+          <p>Active Application</p>
+          <span class="card-chevron"></span>
+        </a>
+      </section>
+
+      <!-- Weekly schedule list -->
+      <section class="upcoming">
+        <h3>Weekly Schedule</h3>
+        <div id="upcomingContainer"></div>
+      </section>
+
+    </main>
+
+    <!-- ══════ CONFIRM MODAL ══════ -->
+    <div id="customConfirmModal" class="modal" style="display:none">
+      <div class="modal-content">
+        <h2 id="confirmTitle">Confirm</h2>
+        <div id="confirmTime"></div>
+        <p id="confirmMessage"></p>
+        <div style="display:flex;gap:.75rem;justify-content:flex-end;margin-top:1rem">
+          <button id="confirmNo"  class="btn">No</button>
+          <button id="confirmYes" class="btn save" style="background:#e74c3c">Yes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ SCRIPTS ══════ -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="../assets/js/supabaseClient.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/dataService.js"></script>
+    <script src="../assets/js/ui.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/homePage.js"></script>
+
+    <!-- Dark mode toggle runtime -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var btn  = document.getElementById("darkModeToggle");
+        var html = document.documentElement;
+
+        function syncIcon() {
+          var dark = html.getAttribute("data-theme") === "dark";
+          btn.textContent = dark ? "☀️" : "🌙";
+          btn.title = dark ? "Switch to light mode" : "Switch to dark mode";
+        }
+        syncIcon();
+
+        btn.addEventListener("click", function () {
+          var dark = html.getAttribute("data-theme") === "dark";
+          if (dark) {
+            html.removeAttribute("data-theme");
+            localStorage.setItem("theme", "light");
+          } else {
+            html.setAttribute("data-theme", "dark");
+            localStorage.setItem("theme", "dark");
+          }
+          syncIcon();
+        });
+      });
+    </script>
+
+  </body>
+</html>
