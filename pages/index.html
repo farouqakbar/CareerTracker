@@ -102,19 +102,18 @@
       border-color: #2a2d3e;
     }
 
-    /* Language toggle button */
-    .nav-lang-btn {
-      width: auto; height: 2rem;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 8px; cursor: pointer;
-      background: rgba(92,102,122,0.1);
-      border: 1px solid var(--border);
-      font-size: 0.78rem; font-weight: 600; transition: all 0.2s;
-      padding: 0 0.6rem; line-height: 1;
-      flex-shrink: 0; color: var(--brand);
+    /* ── LANGUAGE TOGGLE BUTTON ── */
+    .lang-btn {
+      display: inline-flex; align-items: center; gap: 0.25rem;
+      padding: 0.3rem 0.625rem; border-radius: 2rem;
+      border: 1px solid var(--border); background: rgba(92,102,122,0.1);
+      color: var(--brand); font-size: 0.75rem; font-weight: 700;
+      font-family: "Poppins", sans-serif; cursor: pointer;
+      transition: all 0.2s; letter-spacing: 0.3px; flex-shrink: 0;
     }
-    .nav-lang-btn:hover { background: rgba(92,102,122,0.2); border-color: var(--accent); }
-    [data-theme="dark"] .nav-lang-btn { background: rgba(255,255,255,0.06); border-color: #2a2d3e; color: #9ca3af; }
+    .lang-btn:hover { background: var(--brand); color: white; border-color: var(--brand); transform: translateY(-1px); }
+    [data-theme="dark"] .lang-btn { background: rgba(255,255,255,0.06); border-color: #2a2d3e; color: #9ca3af; }
+    [data-theme="dark"] .lang-btn:hover { background: var(--brand); border-color: var(--brand); color: white; }
 
 
     html { scroll-behavior: smooth; }
@@ -625,9 +624,9 @@
     </ul>
     <div class="nav-cta">
       <button class="nav-dark-toggle" id="navDarkToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
-      <button class="nav-lang-btn" id="navLangBtn" title="Ganti ke Bahasa Indonesia">🇬🇧 EN</button>
-      <a href="pages/login.html" class="btn-outline" data-i18n-lp="sign_in">Sign In</a>
-      <a href="pages/login.html" class="btn-primary-nav" data-i18n-lp="sign_up">Sign Up</a>
+      <button class="lang-btn" id="navLangBtn" title="Ganti ke Bahasa Indonesia">🇬🇧 EN</button>
+      <a href="pages/login.html" class="btn-outline" id="navSignIn">Sign In</a>
+      <a href="pages/login.html" class="btn-primary-nav" id="navSignUp">Sign Up</a>
     </div>
     <button class="nav-hamburger" id="navHamburger" aria-label="Toggle navigation">
       <span></span><span></span><span></span>
@@ -640,22 +639,22 @@
     <a href="#how-it-works" onclick="closeMobileNav()">How it works</a>
     <a href="#about" onclick="closeMobileNav()">About</a>
     <div class="mobile-cta">
-      <a href="pages/login.html" class="btn-outline" style="flex:1;text-align:center">Sign In</a>
-      <a href="pages/login.html" class="btn-primary-nav" style="flex:1;text-align:center">Sign Up</a>
+      <a href="pages/login.html" id="mobileSignIn" class="btn-outline" style="flex:1;text-align:center">Sign In</a>
+      <a href="pages/login.html" id="mobileSignUp" class="btn-primary-nav" style="flex:1;text-align:center">Sign Up</a>
     </div>
   </div>
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-badge"><span class="dot"></span><span data-lp="hero_badge">Now free to use</span></div>
-    <h1><span data-lp="hero_title_1">Track every step of</span><br />your <span class="highlight" data-lp="hero_highlight">career journey</span></h1>
-    <p data-lp="hero_desc">
+    <div class="hero-badge"><span class="dot"></span>Now free to use</div>
+    <h1>Track every step of<br />your <span class="highlight">career journey</span></h1>
+    <p>
       CareerTracker is your personal command center for job hunting — manage applications,
       track deadlines, monitor interview stages, and never miss an opportunity again.
     </p>
     <div class="hero-actions">
-      <a href="pages/login.html" class="btn-hero-primary" data-lp="hero_cta">Get Started Free</a>
-      <a href="#features" class="btn-hero-secondary" data-lp="hero_see">See features</a>
+      <a href="pages/login.html" class="btn-hero-primary">Get Started Free</a>
+      <a href="#features" class="btn-hero-secondary">See features</a>
     </div>
   </section>
 
@@ -663,60 +662,60 @@
   <div class="stats-strip">
     <div class="stat-item">
       <div class="num">100<span>%</span></div>
-      <div class="label" data-lp="stat_free">Free to use</div>
+      <div class="label">Free to use</div>
     </div>
     <div class="stat-item">
       <div class="num"><span>∞</span></div>
-      <div class="label" data-lp="stat_apps">Applications tracked</div>
+      <div class="label">Applications tracked</div>
     </div>
     <div class="stat-item">
       <div class="num">3<span>+</span></div>
-      <div class="label" data-lp="stat_modules">Core modules</div>
+      <div class="label">Core modules</div>
     </div>
     <div class="stat-item">
       <div class="num"><span>☁️</span></div>
-      <div class="label" data-lp="stat_sync">Cloud sync</div>
+      <div class="label">Cloud sync</div>
     </div>
   </div>
 
   <!-- FEATURES -->
   <section class="features" id="features">
-    <span class="section-label" data-lp="feat_label">Features</span>
-    <h2 class="section-title" data-lp="feat_title">Everything you need to land the job</h2>
-    <p class="section-subtitle" data-lp="feat_sub">
+    <span class="section-label">Features</span>
+    <h2 class="section-title">Everything you need to land the job</h2>
+    <p class="section-subtitle">
       From tracking vacancies to following up on interviews, CareerTracker gives you full
       visibility into your job search — all in one place.
     </p>
     <div class="features-grid">
       <div class="feature-card">
         <div class="feature-icon" style="background:rgba(92,102,122,0.1)">📄</div>
-        <h3 data-lp="f1_title">Application Tracker</h3>
-        <p data-lp="f1_desc">Log every application with company, program, and position. Track status from Active to Rejected with a single click.</p>
+        <h3>Application Tracker</h3>
+        <p>Log every application with company, program, and position. Track status from Active to Rejected with a single click.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon" style="background:rgba(244,185,96,0.12)">📁</div>
-        <h3 data-lp="f2_title">Job Vacancy Board</h3>
-        <p data-lp="f2_desc">Save job openings before you apply. Set deadlines, store registration links, and prioritize which roles to pursue first.</p>
+        <h3>Job Vacancy Board</h3>
+        <p>Save job openings before you apply. Set deadlines, store registration links, and prioritize which roles to pursue first.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon" style="background:rgba(34,197,94,0.1)">🗓️</div>
-        <h3 data-lp="f3_title">Stage Timeline</h3>
-        <p data-lp="f3_desc">Visual interview pipeline — from screening to offer. Color-coded stages show what's done, upcoming, and next.</p>
+        <h3>Stage Timeline</h3>
+        <p>Visual interview pipeline — from screening to offer. Color-coded stages show what's done, upcoming, and next.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon" style="background:rgba(59,130,246,0.1)">📅</div>
-        <h3 data-lp="f4_title">Weekly Schedule</h3>
-        <p data-lp="f4_desc">See every interview and deadline within the next 7 days at a glance. Never walk into an interview unprepared again.</p>
+        <h3>Weekly Schedule</h3>
+        <p>See every interview and deadline within the next 7 days at a glance. Never walk into an interview unprepared again.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon" style="background:rgba(239,68,68,0.1)">📋</div>
-        <h3 data-lp="f5_title">CV Manager</h3>
-        <p data-lp="f5_desc">Upload and organize multiple CV versions. Preview PDFs in-app and always know which version you sent to which company.</p>
+        <h3>CV Manager</h3>
+        <p>Upload and organize multiple CV versions. Preview PDFs in-app and always know which version you sent to which company.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon" style="background:rgba(168,85,247,0.1)">☁️</div>
-        <h3 data-lp="f6_title">Cloud Sync</h3>
-        <p data-lp="f6_desc">Your data lives in the cloud via Supabase. Log in from any device and pick up right where you left off.</p>
+        <h3>Cloud Sync</h3>
+        <p>Your data lives in the cloud via Supabase. Log in from any device and pick up right where you left off.</p>
       </div>
     </div>
   </section>
@@ -724,29 +723,29 @@
   <!-- HOW IT WORKS -->
   <section class="how-it-works" id="how-it-works">
     <div class="inner">
-      <span class="section-label" style="color:var(--accent)" data-lp="how_label">How it works</span>
-      <h2 class="section-title" data-lp="how_title">From job listing to offer letter</h2>
-      <p class="section-subtitle" data-lp="how_sub">Four simple steps to stay on top of your entire job search.</p>
+      <span class="section-label" style="color:var(--accent)">How it works</span>
+      <h2 class="section-title">From job listing to offer letter</h2>
+      <p class="section-subtitle">Four simple steps to stay on top of your entire job search.</p>
       <div class="steps-grid">
         <div class="step-item">
           <div class="step-num">01</div>
-          <h4 data-lp="step1_title">Create an account</h4>
-          <p data-lp="step1_desc">Sign up with a username and password. No email verification required — start immediately.</p>
+          <h4>Create an account</h4>
+          <p>Sign up with a username and password. No email verification required — start immediately.</p>
         </div>
         <div class="step-item">
           <div class="step-num">02</div>
-          <h4 data-lp="step2_title">Add job vacancies</h4>
-          <p data-lp="step2_desc">Save roles you're interested in with deadlines and links. Prioritize which ones to apply first.</p>
+          <h4>Add job vacancies</h4>
+          <p>Save roles you're interested in with deadlines and links. Prioritize which ones to apply first.</p>
         </div>
         <div class="step-item">
           <div class="step-num">03</div>
-          <h4 data-lp="step3_title">Log your applications</h4>
-          <p data-lp="step3_desc">When you apply, move the vacancy to your Applied board. Add interview stages and dates as they come in.</p>
+          <h4>Log your applications</h4>
+          <p>When you apply, move the vacancy to your Applied board. Add interview stages and dates as they come in.</p>
         </div>
         <div class="step-item">
           <div class="step-num">04</div>
-          <h4 data-lp="step4_title">Track every stage</h4>
-          <p data-lp="step4_desc">Update stages as you progress. The timeline shows exactly where you stand at each company.</p>
+          <h4>Track every stage</h4>
+          <p>Update stages as you progress. The timeline shows exactly where you stand at each company.</p>
         </div>
       </div>
     </div>
@@ -756,18 +755,18 @@
   <section class="detail-section" id="about">
     <div class="detail-grid">
       <div class="detail-text">
-        <span class="section-label" data-lp="about_label">About CareerTracker</span>
-        <h2 data-lp="about_title">Built for real job seekers, by someone who needed it</h2>
-        <p data-lp="about_desc">
+        <span class="section-label">About CareerTracker</span>
+        <h2>Built for real job seekers, by someone who needed it</h2>
+        <p>
           CareerTracker was born from the frustration of juggling dozens of applications, interviews,
           and deadlines across scattered spreadsheets. We built the tool we wished we had —
           simple, fast, and free forever.
         </p>
         <ul class="feature-list">
-          <li><span class="check">✓</span> <span data-lp="about_li1">100% free — no subscription, no hidden cost</span></li>
-          <li><span class="check">✓</span> <span data-lp="about_li2">Cloud-synced — access from any device, anywhere</span></li>
-          <li><span class="check">✓</span> <span data-lp="about_li3">Privacy-first — your data stays yours</span></li>
-          <li><span class="check">✓</span> <span data-lp="about_li4">No email required — sign up in seconds</span></li>
+          <li><span class="check">✓</span> <span>100% free — no subscription, no hidden cost</span></li>
+          <li><span class="check">✓</span> <span>Cloud-synced — access from any device, anywhere</span></li>
+          <li><span class="check">✓</span> <span>Privacy-first — your data stays yours</span></li>
+          <li><span class="check">✓</span> <span>No email required — sign up in seconds</span></li>
         </ul>
       </div>
       <div class="detail-visual">
@@ -891,57 +890,44 @@
 
   <!-- CTA -->
   <section class="cta-section">
-    <h2 data-lp="cta_title">Ready to take control of your job search?</h2>
-    <p data-lp="cta_desc">Join CareerTracker today — it's completely free. Start organizing your applications and track your path to your dream job.</p>
-    <a href="pages/login.html" class="btn-cta" data-lp="cta_btn">Sign Up — It's Free</a>
+    <h2>Ready to take control of your job search?</h2>
+    <p>Join CareerTracker today — it's completely free. Start organizing your applications and track your path to your dream job.</p>
+    <a href="pages/login.html" class="btn-cta">Sign Up — It's Free</a>
   </section>
 
   <!-- FOOTER -->
   <footer>
     <div class="footer-logo">Career<span>Tracker</span></div>
-    <p data-lp="footer_tagline">Track your journey. Land your dream job.</p>
+    <p>Track your journey. Land your dream job.</p>
   </footer>
 
   <script>
-    // ── Landing page bilingual system ──
-    const LP_TEXTS = {
+    // ── Landing page bilingual (EN/ID) ──────────────────────────
+    const LP = {
       en: {
         hero_badge: "Now free to use",
-        hero_title_1: "Track every step of",
-        hero_highlight: "career journey",
+        hero_h1: "Track every step of<br />your <span class=\"highlight\">career journey</span>",
         hero_desc: "CareerTracker is your personal command center for job hunting — manage applications, track deadlines, monitor interview stages, and never miss an opportunity again.",
         hero_cta: "Get Started Free",
         hero_see: "See features",
-        stat_free: "Free to use",
-        stat_apps: "Applications tracked",
-        stat_modules: "Core modules",
-        stat_sync: "Cloud sync",
+        stat_free: "Free to use", stat_apps: "Applications tracked",
+        stat_modules: "Core modules", stat_sync: "Cloud sync",
         feat_label: "Features",
         feat_title: "Everything you need to land the job",
         feat_sub: "From tracking vacancies to following up on interviews, CareerTracker gives you full visibility into your job search — all in one place.",
-        f1_title: "Application Tracker",
-        f1_desc: "Log every application with company, program, and position. Track status from Active to Rejected with a single click.",
-        f2_title: "Job Vacancy Board",
-        f2_desc: "Save job openings before you apply. Set deadlines, store registration links, and prioritize which roles to pursue first.",
-        f3_title: "Stage Timeline",
-        f3_desc: "Visual interview pipeline — from screening to offer. Color-coded stages show what's done, upcoming, and next.",
-        f4_title: "Weekly Schedule",
-        f4_desc: "See every interview and deadline within the next 7 days at a glance. Never walk into an interview unprepared again.",
-        f5_title: "CV Manager",
-        f5_desc: "Upload and organize multiple CV versions. Preview PDFs in-app and always know which version you sent to which company.",
-        f6_title: "Cloud Sync",
-        f6_desc: "Your data lives in the cloud via Supabase. Log in from any device and pick up right where you left off.",
+        f1_h: "Application Tracker", f1_p: "Log every application with company, program, and position. Track status from Active to Rejected with a single click.",
+        f2_h: "Job Vacancy Board", f2_p: "Save job openings before you apply. Set deadlines, store registration links, and prioritize which roles to pursue first.",
+        f3_h: "Stage Timeline", f3_p: "Visual interview pipeline — from screening to offer. Color-coded stages show what's done, upcoming, and next.",
+        f4_h: "Weekly Schedule", f4_p: "See every interview and deadline within the next 7 days at a glance. Never walk into an interview unprepared again.",
+        f5_h: "CV Manager", f5_p: "Upload and organize multiple CV versions. Preview PDFs in-app and always know which version you sent to which company.",
+        f6_h: "Cloud Sync", f6_p: "Your data lives in the cloud via Supabase. Log in from any device and pick up right where you left off.",
         how_label: "How it works",
         how_title: "From job listing to offer letter",
         how_sub: "Four simple steps to stay on top of your entire job search.",
-        step1_title: "Create an account",
-        step1_desc: "Sign up with a username and password. No email verification required — start immediately.",
-        step2_title: "Add job vacancies",
-        step2_desc: "Save roles you're interested in with deadlines and links. Prioritize which ones to apply first.",
-        step3_title: "Log your applications",
-        step3_desc: "When you apply, move the vacancy to your Applied board. Add interview stages and dates as they come in.",
-        step4_title: "Track every stage",
-        step4_desc: "Update stages as you progress. The timeline shows exactly where you stand at each company.",
+        step1_h: "Create an account", step1_p: "Sign up with a username and password. No email verification required — start immediately.",
+        step2_h: "Add job vacancies", step2_p: "Save roles you're interested in with deadlines and links. Prioritize which ones to apply first.",
+        step3_h: "Log your applications", step3_p: "When you apply, move the vacancy to your Applied board. Add interview stages and dates as they come in.",
+        step4_h: "Track every stage", step4_p: "Update stages as you progress. The timeline shows exactly where you stand at each company.",
         about_label: "About CareerTracker",
         about_title: "Built for real job seekers, by someone who needed it",
         about_desc: "CareerTracker was born from the frustration of juggling dozens of applications, interviews, and deadlines across scattered spreadsheets. We built the tool we wished we had — simple, fast, and free forever.",
@@ -952,101 +938,175 @@
         cta_title: "Ready to take control of your job search?",
         cta_desc: "Join CareerTracker today — it's completely free. Start organizing your applications and track your path to your dream job.",
         cta_btn: "Sign Up — It's Free",
-        footer_tagline: "Track your journey. Land your dream job.",
-        sign_in: "Sign In",
-        sign_up: "Sign Up",
-        nav_features: "Features",
-        nav_how: "How it works",
-        nav_about: "About",
+        footer_tag: "Track your journey. Land your dream job.",
+        nav_feat: "Features", nav_how: "How it works", nav_about: "About",
+        sign_in: "Sign In", sign_up: "Sign Up",
+        lang_btn: "🇬🇧 EN", lang_title: "Ganti ke Bahasa Indonesia",
       },
       id: {
         hero_badge: "Gratis digunakan sekarang",
-        hero_title_1: "Lacak setiap langkah",
-        hero_highlight: "perjalanan kariermu",
+        hero_h1: "Lacak setiap langkah<br />perjalanan <span class=\"highlight\">karier Anda</span>",
         hero_desc: "CareerTracker adalah pusat komando pribadimu untuk mencari kerja — kelola lamaran, lacak tenggat, pantau tahap wawancara, dan jangan pernah melewatkan peluang lagi.",
         hero_cta: "Mulai Gratis",
         hero_see: "Lihat fitur",
-        stat_free: "Gratis sepenuhnya",
-        stat_apps: "Lamaran terlacak",
-        stat_modules: "Modul utama",
-        stat_sync: "Sinkronisasi cloud",
+        stat_free: "Gratis sepenuhnya", stat_apps: "Lamaran terlacak",
+        stat_modules: "Modul utama", stat_sync: "Sinkronisasi cloud",
         feat_label: "Fitur",
         feat_title: "Semua yang kamu butuhkan untuk mendapatkan pekerjaan",
         feat_sub: "Dari melacak lowongan hingga menindaklanjuti wawancara, CareerTracker memberi Anda visibilitas penuh atas pencarian kerja — semua di satu tempat.",
-        f1_title: "Pelacak Lamaran",
-        f1_desc: "Catat setiap lamaran beserta perusahaan, program, dan posisi. Lacak status dari Aktif hingga Ditolak hanya dengan satu klik.",
-        f2_title: "Papan Lowongan Kerja",
-        f2_desc: "Simpan lowongan sebelum melamar. Atur tenggat, simpan tautan pendaftaran, dan prioritaskan posisi yang ingin dilamar terlebih dahulu.",
-        f3_title: "Timeline Tahap",
-        f3_desc: "Pipeline wawancara visual — dari seleksi hingga penawaran. Tahap berkode warna menunjukkan yang selesai, akan datang, dan berikutnya.",
-        f4_title: "Jadwal Mingguan",
-        f4_desc: "Lihat setiap wawancara dan tenggat dalam 7 hari ke depan sekilas. Jangan pernah masuk wawancara tanpa persiapan lagi.",
-        f5_title: "Manajer CV",
-        f5_desc: "Upload dan atur berbagai versi CV. Preview PDF langsung di aplikasi dan selalu tahu versi mana yang dikirim ke perusahaan mana.",
-        f6_title: "Sinkronisasi Cloud",
-        f6_desc: "Data Anda tersimpan di cloud via Supabase. Login dari perangkat apa pun dan lanjutkan tepat di tempat Anda berhenti.",
+        f1_h: "Pelacak Lamaran", f1_p: "Catat setiap lamaran beserta perusahaan, program, dan posisi. Lacak status dari Aktif hingga Ditolak hanya dengan satu klik.",
+        f2_h: "Papan Lowongan Kerja", f2_p: "Simpan lowongan sebelum melamar. Atur tenggat, simpan tautan pendaftaran, dan prioritaskan posisi yang ingin dilamar terlebih dahulu.",
+        f3_h: "Timeline Tahap", f3_p: "Pipeline wawancara visual — dari seleksi hingga penawaran. Tahap berkode warna menunjukkan yang selesai, akan datang, dan berikutnya.",
+        f4_h: "Jadwal Mingguan", f4_p: "Lihat setiap wawancara dan tenggat dalam 7 hari ke depan sekilas. Jangan pernah masuk wawancara tanpa persiapan lagi.",
+        f5_h: "Manajer CV", f5_p: "Upload dan atur berbagai versi CV. Preview PDF langsung di aplikasi dan selalu tahu versi mana yang dikirim ke perusahaan mana.",
+        f6_h: "Sinkronisasi Cloud", f6_p: "Data Anda tersimpan di cloud via Supabase. Login dari perangkat apa pun dan lanjutkan tepat di tempat Anda berhenti.",
         how_label: "Cara kerja",
         how_title: "Dari lowongan hingga surat penawaran",
         how_sub: "Empat langkah mudah untuk tetap menguasai seluruh pencarian kerja Anda.",
-        step1_title: "Buat akun",
-        step1_desc: "Daftar dengan username dan kata sandi. Tidak perlu verifikasi email — langsung mulai.",
-        step2_title: "Tambah lowongan kerja",
-        step2_desc: "Simpan posisi yang diminati beserta tenggat dan tautan. Prioritaskan mana yang akan dilamar lebih dulu.",
-        step3_title: "Catat lamaran Anda",
-        step3_desc: "Setelah melamar, pindahkan lowongan ke papan Lamaran. Tambahkan tahap wawancara dan tanggal saat masuk.",
-        step4_title: "Lacak setiap tahap",
-        step4_desc: "Perbarui tahap seiring progres. Timeline menunjukkan dengan tepat di mana Anda berada di setiap perusahaan.",
+        step1_h: "Buat akun", step1_p: "Daftar dengan username dan kata sandi. Tidak perlu verifikasi email — langsung mulai.",
+        step2_h: "Tambah lowongan kerja", step2_p: "Simpan posisi yang diminati beserta tenggat dan tautan. Prioritaskan mana yang akan dilamar lebih dulu.",
+        step3_h: "Catat lamaran Anda", step3_p: "Setelah melamar, pindahkan lowongan ke papan Lamaran. Tambahkan tahap wawancara dan tanggal saat masuk.",
+        step4_h: "Lacak setiap tahap", step4_p: "Perbarui tahap seiring progres. Timeline menunjukkan dengan tepat di mana Anda berada di setiap perusahaan.",
         about_label: "Tentang CareerTracker",
         about_title: "Dibuat untuk pencari kerja sejati, oleh seseorang yang membutuhkannya",
         about_desc: "CareerTracker lahir dari frustrasi mengurus puluhan lamaran, wawancara, dan tenggat di spreadsheet yang berantakan. Kami membangun alat yang kami inginkan — sederhana, cepat, dan gratis selamanya.",
         about_li1: "100% gratis — tanpa langganan, tanpa biaya tersembunyi",
         about_li2: "Tersinkronisasi cloud — akses dari perangkat apa pun, di mana saja",
         about_li3: "Privasi terjaga — data Anda tetap milik Anda",
-        about_li4: "Tanpa email — daftar dalam hitungan detik",
+        about_li4: "Tanpa verifikasi email — daftar dalam hitungan detik",
         cta_title: "Siap mengendalikan pencarian kerja Anda?",
         cta_desc: "Bergabung dengan CareerTracker hari ini — sepenuhnya gratis. Mulai atur lamaran dan lacak jalan menuju pekerjaan impian Anda.",
         cta_btn: "Daftar — Gratis",
-        footer_tagline: "Lacak perjalananmu. Raih pekerjaan impianmu.",
-        sign_in: "Masuk",
-        sign_up: "Daftar",
-        nav_features: "Fitur",
-        nav_how: "Cara kerja",
-        nav_about: "Tentang",
+        footer_tag: "Lacak perjalananmu. Raih pekerjaan impianmu.",
+        nav_feat: "Fitur", nav_how: "Cara kerja", nav_about: "Tentang",
+        sign_in: "Masuk", sign_up: "Daftar",
+        lang_btn: "🇮🇩 ID", lang_title: "Switch to English",
       }
     };
 
-    function getLPLang() { return localStorage.getItem('ct_lang') || 'en'; }
+    // Map of data-lp key → DOM element
+    const LP_ELEMENTS = {
+      hero_badge:    () => document.querySelector('.hero-badge'),
+      hero_desc:     () => document.querySelector('.hero > p'),
+      hero_cta:      () => document.querySelector('.btn-hero-primary'),
+      hero_see:      () => document.querySelector('.btn-hero-secondary'),
+      stat_free:     () => document.querySelectorAll('.stats-strip .label')[0],
+      stat_apps:     () => document.querySelectorAll('.stats-strip .label')[1],
+      stat_modules:  () => document.querySelectorAll('.stats-strip .label')[2],
+      stat_sync:     () => document.querySelectorAll('.stats-strip .label')[3],
+      feat_label:    () => document.querySelector('.features .section-label'),
+      feat_title:    () => document.querySelector('.features .section-title'),
+      feat_sub:      () => document.querySelector('.features .section-subtitle'),
+      how_sub:       () => document.querySelector('.how-it-works .section-subtitle'),
+      cta_title:     () => document.querySelector('.cta-section h2'),
+      cta_desc:      () => document.querySelector('.cta-section p'),
+      cta_btn:       () => document.querySelector('.btn-cta'),
+      footer_tag:    () => document.querySelector('footer > p'),
+      sign_in:       () => document.getElementById('navSignIn'),
+      sign_up:       () => document.getElementById('navSignUp'),
+    };
+
+    function getLang() { return localStorage.getItem('ct_lang') || 'en'; }
+
     function applyLPLang() {
-      const lang = getLPLang();
-      const texts = LP_TEXTS[lang] || LP_TEXTS.en;
-      document.querySelectorAll('[data-lp]').forEach(el => {
-        const key = el.getAttribute('data-lp');
-        if (texts[key]) el.textContent = texts[key];
-      });
-      document.querySelectorAll('[data-i18n-lp]').forEach(el => {
-        const key = el.getAttribute('data-i18n-lp');
-        if (texts[key]) el.textContent = texts[key];
-      });
-      // Update nav links text
-      const navLinks = document.querySelectorAll('.nav-links a');
-      if (navLinks[0]) navLinks[0].textContent = texts.nav_features;
-      if (navLinks[1]) navLinks[1].textContent = texts.nav_how;
-      if (navLinks[2]) navLinks[2].textContent = texts.nav_about;
-      // Update mobile nav links
-      const mobileLinks = document.querySelectorAll('.mobile-nav a:not(.btn-outline):not(.btn-primary-nav)');
-      if (mobileLinks[0]) mobileLinks[0].textContent = texts.nav_features;
-      if (mobileLinks[1]) mobileLinks[1].textContent = texts.nav_how;
-      if (mobileLinks[2]) mobileLinks[2].textContent = texts.nav_about;
-      // Update lang button
-      const langBtn = document.getElementById('navLangBtn');
-      if (langBtn) {
-        langBtn.textContent = lang === 'id' ? '🇮🇩 ID' : '🇬🇧 EN';
-        langBtn.title = lang === 'id' ? 'Switch to English' : 'Ganti ke Bahasa Indonesia';
+      const lang = getLang();
+      const tx = LP[lang] || LP.en;
+
+      // Hero h1 (innerHTML for highlight span)
+      const h1 = document.querySelector('.hero h1');
+      if (h1) h1.innerHTML = tx.hero_h1;
+
+      // Hero badge (keep dot span, replace text)
+      const badge = document.querySelector('.hero-badge');
+      if (badge) {
+        const dot = badge.querySelector('.dot');
+        badge.textContent = tx.hero_badge;
+        if (dot) badge.prepend(dot);
       }
+
+      // Simple text elements
+      const simple = {
+        '.hero > p': tx.hero_desc,
+        '.btn-hero-primary': tx.hero_cta,
+        '.btn-hero-secondary': tx.hero_see,
+        '.features .section-label': tx.feat_label,
+        '.features .section-title': tx.feat_title,
+        '.features .section-subtitle': tx.feat_sub,
+        '.how-it-works .section-label': tx.how_label,
+        '.how-it-works .section-title': tx.how_title,
+        '.how-it-works .section-subtitle': tx.how_sub,
+        '.cta-section h2': tx.cta_title,
+        '.cta-section p': tx.cta_desc,
+        '.btn-cta': tx.cta_btn,
+        'footer > p': tx.footer_tag,
+        '#navSignIn': tx.sign_in,
+        '#navSignUp': tx.sign_up,
+        '#mobileSignIn': tx.sign_in,
+        '#mobileSignUp': tx.sign_up,
+      };
+      for (const [sel, text] of Object.entries(simple)) {
+        const el = document.querySelector(sel);
+        if (el) el.textContent = text;
+      }
+
+      // About section
+      const aboutLabel = document.querySelector('.detail-text .section-label');
+      if (aboutLabel) aboutLabel.textContent = tx.about_label;
+      const aboutTitle = document.querySelector('.detail-text h2');
+      if (aboutTitle) aboutTitle.textContent = tx.about_title;
+      const aboutDesc = document.querySelector('.detail-text > p');
+      if (aboutDesc) aboutDesc.textContent = tx.about_desc;
+      const lis = document.querySelectorAll('.detail-text .feature-list li');
+      const liKeys = ['about_li1','about_li2','about_li3','about_li4'];
+      lis.forEach((li, i) => {
+        const span = li.querySelector('span:last-child');
+        if (span && tx[liKeys[i]]) span.textContent = tx[liKeys[i]];
+      });
+
+      // Feature cards
+      const cards = document.querySelectorAll('.feature-card');
+      const fcKeys = ['f1','f2','f3','f4','f5','f6'];
+      cards.forEach((card, i) => {
+        const k = fcKeys[i];
+        if (!k) return;
+        const h3 = card.querySelector('h3');
+        const p  = card.querySelector('p');
+        if (h3) h3.textContent = tx[k+'_h'];
+        if (p)  p.textContent  = tx[k+'_p'];
+      });
+
+      // Steps
+      const steps = document.querySelectorAll('.steps-grid .step-item');
+      const stKeys = ['step1','step2','step3','step4'];
+      steps.forEach((s, i) => {
+        const k = stKeys[i];
+        if (!k) return;
+        const h4 = s.querySelector('h4');
+        const p  = s.querySelector('p');
+        if (h4) h4.textContent = tx[k+'_h'];
+        if (p)  p.textContent  = tx[k+'_p'];
+      });
+
+      // Nav links
+      const navLinks = document.querySelectorAll('.nav-links a');
+      if (navLinks[0]) navLinks[0].textContent = tx.nav_feat;
+      if (navLinks[1]) navLinks[1].textContent = tx.nav_how;
+      if (navLinks[2]) navLinks[2].textContent = tx.nav_about;
+
+      // Mobile nav links
+      const mobileLinks = document.querySelectorAll('.mobile-nav a:not(.btn-outline):not(.btn-primary-nav)');
+      if (mobileLinks[0]) mobileLinks[0].textContent = tx.nav_feat;
+      if (mobileLinks[1]) mobileLinks[1].textContent = tx.nav_how;
+      if (mobileLinks[2]) mobileLinks[2].textContent = tx.nav_about;
+
+      // Lang button
+      const langBtn = document.getElementById('navLangBtn');
+      if (langBtn) { langBtn.textContent = tx.lang_btn; langBtn.title = tx.lang_title; }
+
       document.documentElement.lang = lang;
     }
 
-    // Mobile nav toggle
+    // ── Mobile nav toggle ──
     const hamburger = document.getElementById('navHamburger');
     const mobileNav = document.getElementById('mobileNav');
     hamburger.addEventListener('click', () => mobileNav.classList.toggle('open'));
@@ -1056,7 +1116,7 @@
         mobileNav.classList.remove('open');
     });
 
-    // Dark mode toggle
+    // ── Dark mode toggle ──
     const darkToggle = document.getElementById('navDarkToggle');
     const htmlEl = document.documentElement;
     function syncDarkIcon() {
@@ -1067,28 +1127,22 @@
     syncDarkIcon();
     darkToggle.addEventListener('click', function () {
       const isDark = htmlEl.getAttribute('data-theme') === 'dark';
-      if (isDark) {
-        htmlEl.removeAttribute('data-theme');
-        localStorage.setItem('theme', 'light');
-      } else {
-        htmlEl.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-      }
+      if (isDark) { htmlEl.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+      else        { htmlEl.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
       syncDarkIcon();
     });
 
-    // Language toggle
+    // ── Language toggle ──
     document.getElementById('navLangBtn').addEventListener('click', function () {
-      const newLang = getLPLang() === 'id' ? 'en' : 'id';
-      localStorage.setItem('ct_lang', newLang);
+      localStorage.setItem('ct_lang', getLang() === 'id' ? 'en' : 'id');
       applyLPLang();
     });
 
-    // Apply lang on load
+    // Apply language on load
     applyLPLang();
 
-    // Home cards preview tab switching
-    const phcTabs = document.querySelectorAll('.phc-tab');
+    // ── Home cards preview tabs ──
+    const phcTabs  = document.querySelectorAll('.phc-tab');
     const phcCards = document.querySelectorAll('.preview-home-card');
     phcTabs.forEach(tab => {
       tab.addEventListener('click', () => {
@@ -1096,22 +1150,17 @@
         phcTabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         phcCards.forEach(card => {
-          if (card.dataset.card === target) {
-            card.classList.remove('phc-hidden');
-          } else {
-            card.classList.add('phc-hidden');
-          }
+          card.classList.toggle('phc-hidden', card.dataset.card !== target);
         });
       });
     });
 
-    // Auto rotate cards every 3 seconds
-    let autoRotateIdx = 0;
-    const cardKeys = ['applied', 'vacancy', 'schedule'];
+    // Auto-rotate cards every 3.5s
+    let autoIdx = 0;
+    const cardKeys = ['applied','vacancy','schedule'];
     setInterval(() => {
-      autoRotateIdx = (autoRotateIdx + 1) % cardKeys.length;
-      const nextKey = cardKeys[autoRotateIdx];
-      const nextTab = document.querySelector(`.phc-tab[data-target="${nextKey}"]`);
+      autoIdx = (autoIdx + 1) % cardKeys.length;
+      const nextTab = document.querySelector(`.phc-tab[data-target="${cardKeys[autoIdx]}"]`);
       if (nextTab) nextTab.click();
     }, 3500);
   </script>
