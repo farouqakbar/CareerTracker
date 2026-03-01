@@ -1,0 +1,89 @@
+/* =============================================================
+   theme.css — Color overrides & dark mode
+   Import order: 10th (last)
+
+   ⚠️  CATATAN v5:
+   Rule .timeline .step.done/current/upcoming DIHAPUS dari sini
+   karena sudah dihandle lengkap di timeline.css (v5) dengan
+   box-shadow, active ring, dan hover state yang konsisten.
+   Duplikasi !important di sini menyebabkan box-shadow hilang.
+   ============================================================= */
+
+/* ── Job Vacancy card: force same dark gradient as other stat cards ── */
+.stats .card:first-child {
+  background: linear-gradient(135deg, #1a1d2e 0%, #2d3252 100%) !important;
+}
+[data-theme="dark"] .stats .card:first-child {
+  background: linear-gradient(135deg, #252a40 0%, #2e3558 100%) !important;
+  border: 1px solid #3a4160 !important;
+}
+
+/* ── Dark mode: app-summary card ── */
+[data-theme="dark"] .app-summary {
+  background: #1e2235;
+  border-color: #3a4160;
+}
+
+/* ── Dark mode: stage-box ── */
+[data-theme="dark"] .stage-box {
+  background: #1e2235;
+  border-color: #3a4160;
+}
+[data-theme="dark"] .stage-box .notes {
+  background: #252a40;
+  border-color: #3a4160;
+  color: var(--text);
+}
+
+/* ── Dark mode: table & inputs ── */
+[data-theme="dark"] .applied-header input[type="text"] {
+  background: var(--surface)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238892a4' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E")
+    0.75rem center no-repeat;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .applied-table select,
+[data-theme="dark"] .applied-table .status-select,
+[data-theme="dark"] .applied-table .vacancy-status-select {
+  background: var(--card-bg);
+  color: var(--text);
+  border-color: var(--border);
+  color-scheme: dark;
+}
+
+[data-theme="dark"] .table-container   { border-color: var(--border); }
+[data-theme="dark"] .applied-table thead { background: #1e2235; }
+[data-theme="dark"] .applied-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+/* ── Dark mode: profile & misc ── */
+[data-theme="dark"] .profile-dropdown  { background: #1e2235; }
+[data-theme="dark"] .profile-card,
+[data-theme="dark"] .cv-section ul li  { background: #1e2235; }
+
+[data-theme="dark"] .profile-input,
+[data-theme="dark"] .login-input,
+[data-theme="dark"] #cvSelector {
+  background: var(--card-bg);
+  color: var(--text);
+  border-color: var(--border);
+  color-scheme: dark;
+}
+
+[data-theme="dark"] #cvViewer       { border-color: var(--border); }
+[data-theme="dark"] #cvChooseLabel  {
+  background: var(--card-bg);
+  border-color: var(--border);
+  color: var(--muted);
+}
+[data-theme="dark"] #cvChooseLabel:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+/* ── Dark mode: danger zone ── */
+[data-theme="dark"] .danger-zone {
+  background: rgba(248, 113, 113, 0.06);
+  border-color: rgba(248, 113, 113, 0.25);
+}

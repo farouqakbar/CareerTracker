@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Application Detail</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/layout.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/modal.css" />
+  <link rel="stylesheet" href="../assets/css/detail.css" />
+  <link rel="stylesheet" href="../assets/css/mobile.css" />
+  <link rel="stylesheet" href="../assets/css/theme.css" />
+  <script>
+    (function () {
+      const saved = localStorage.getItem("theme");
+      if (saved === "dark") document.documentElement.setAttribute("data-theme", "dark");
+    })();
+  </script>
+
+  <!-- Stage box + notes styles are now in detail.css -->
+</head>
+<body>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="left-section">
+      <div id="toggleBtn">☰</div>
+      <a href="home.html" class="logo" style="text-decoration:none">Career<span>Tracker</span></a>
+    </div>
+    <div class="right-section">
+      <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+      <div class="profile" id="profileBtn">
+        <span id="topbarDisplayName">-</span>
+        <div class="avatar" id="topbarAvatar"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="menu">
+      <a href="home.html" class="menu-item" data-title="Home">🏠 <span>Home</span></a>
+      <a href="how-to-use.html" class="menu-item" data-title="Cara Penggunaan">📖 <span>Cara Penggunaan</span></a>
+      <a href="about.html" class="menu-item" data-title="Tentang Kami">ℹ️ <span>Tentang Kami</span></a>
+    </div>
+  </aside>
+  <div id="sidebarOverlay"></div>
+
+  <!-- PROFILE DROPDOWN -->
+  <div class="profile-dropdown" id="dropdown">
+    <div>👤 Profile</div>
+    <div id="cvLink">📄 My CV</div>
+    <hr />
+    <div class="logout">🚪 Sign Out</div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="main" id="main">
+    <section class="application-info">
+
+      <!-- Header: Back + Title -->
+      <div class="header-actions">
+        <div id="backBtn" title="Back" class="back-icon">←</div>
+        <h2>Application Info</h2>
+      </div>
+
+      <!-- App Summary Card -->
+      <div class="app-summary">
+        <div class="company-name">
+          <h1></h1>
+          <h3></h3>
+        </div>
+        <div class="detail-actions" style="position:relative">
+          <span id="editStages" class="edit-stages" title="Edit stages">✎</span>
+          <div class="add-btn" title="Add stage">+</div>
+          <span id="selectCompany" class="select-company" title="Switch application">▼</span>
+          <div id="companyDropdown" class="company-dropdown" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="timeline"></div>
+
+      <!-- Stage Detail Box — struktur baru sesuai preview -->
+      <div class="stage-box" id="stageDetailBox" style="display:none">
+        <div class="stage-box-header">
+          <h3 id="stageBoxTitle"></h3>
+          <span id="noteEdit" class="note-edit" title="Edit note">✎</span>
+        </div>
+        <div class="stage-meta">
+          <span class="stage-meta-label">Deadline</span>
+          <span class="stage-meta-value" id="detailDeadline">—</span>
+        </div>
+        <div class="stage-meta" style="padding-top:0.5rem;padding-bottom:0">
+          <span class="stage-meta-label">Note</span>
+          <span class="stage-meta-value" style="opacity:0;font-size:0.7rem">·</span>
+        </div>
+        <div class="stage-notes" id="stageNotes"></div>
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="danger-zone">
+        <h4>⚠️ Danger Zone</h4>
+        <p>Permanently delete this application and all its stage data. This action cannot be undone.</p>
+        <button id="deleteApp" class="btn-delete-app">🗑️ Delete Application</button>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- STAGE MODAL -->
+  <div id="stageModal" class="modal" style="display:none">
+    <div class="modal-content">
+      <span class="close-stage">&times;</span>
+      <h2>Add Stage</h2>
+      <div class="form-group">
+        <label>Step Number</label>
+        <input type="number" id="stageNumber" min="1" />
+      </div>
+      <div class="form-group">
+        <label>Stage Name</label>
+        <input type="text" id="stageName" />
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="stageDate" />
+      </div>
+      <div class="form-group">
+        <label>Time</label>
+        <input type="time" id="stageTime" />
+      </div>
+      <button id="stageSave" class="btn save">Save</button>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRM MODAL -->
+  <div id="deleteModal" class="modal" style="display:none">
+    <div class="modal-content">
+      <span class="close-delete">&times;</span>
+      <h2>Delete from list?</h2>
+      <div class="form-group"><label id="delProgram">🏷️ Program:</label></div>
+      <div class="form-group"><label id="delCompany">🏢 Company:</label></div>
+      <div class="form-group"><label id="delStage">📍 Stage:</label></div>
+      <button id="deleteConfirm" class="btn danger">Delete</button>
+    </div>
+  </div>
+
+  <!-- CUSTOM CONFIRM MODAL -->
+  <div id="customConfirmModal" class="modal" style="display:none">
+    <div class="modal-content">
+      <h2 id="confirmTitle">Confirm</h2>
+      <div id="confirmTime"></div>
+      <p id="confirmMessage"></p>
+      <div>
+        <button id="confirmNo"  class="btn">No</button>
+        <button id="confirmYes" class="btn danger">Yes</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="../assets/js/supabaseClient.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/dataService.js"></script>
+  <script src="../assets/js/ui.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/applicationDetailPage.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const btn  = document.getElementById("darkModeToggle");
+      const html = document.documentElement;
+      function updateIcon() {
+        const isDark = html.getAttribute("data-theme") === "dark";
+        btn.textContent = isDark ? "☀️" : "🌙";
+        btn.title = isDark ? "Switch to light mode" : "Switch to dark mode";
+      }
+      updateIcon();
+      btn.addEventListener("click", function () {
+        const isDark = html.getAttribute("data-theme") === "dark";
+        if (isDark) { html.removeAttribute("data-theme"); localStorage.setItem("theme", "light"); }
+        else        { html.setAttribute("data-theme", "dark"); localStorage.setItem("theme", "dark"); }
+        updateIcon();
+      });
+
+      // Sidebar: How to use & About us
+      function closeSidebar() {
+        const sb = document.getElementById("sidebar");
+        const ov = document.getElementById("sidebarOverlay");
+        if (sb) sb.classList.remove("open");
+        if (ov) ov.classList.remove("active");
+      }
+      const howTo = document.getElementById("sidebarHowTo");
+      const about = document.getElementById("sidebarAbout");
+      if (howTo) howTo.addEventListener("click", function(e) {
+        e.preventDefault(); closeSidebar();
+        alert("📖 How to Use CareerTracker:\n\n1. Gunakan panah ‹ › di Home untuk berpindah antar card.\n2. Card 'Job Vacancy' → simpan lowongan yang ingin dilamar.\n3. Card 'Active Application' → catat lamaran yang sudah dikirim.\n4. Card 'Weekly Schedule' → lihat jadwal interview 7 hari ke depan.\n5. Klik ➤ pada detail lamaran untuk mengelola timeline stage rekrutmen.\n6. Upload CV via ikon profil di kanan atas.");
+      });
+      if (about) about.addEventListener("click", function(e) {
+        e.preventDefault(); closeSidebar();
+        alert("ℹ️ About CareerTracker\n\nCareerTracker adalah aplikasi web personal untuk melacak seluruh proses lamaran kerja Anda.\n\nFitur utama:\n• Manajemen lowongan & lamaran\n• Timeline proses rekrutmen\n• Weekly schedule otomatis\n• Upload & preview CV\n• Cloud sync via Supabase\n\nDibuat dengan ❤️ menggunakan Vanilla JS + Supabase.");
+      });
+    });
+  </script>
+</body>
+</html>

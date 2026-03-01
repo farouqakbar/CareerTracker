@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CareerTracker — Track Your Journey to Success</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    (function() {
+      if (localStorage.getItem('theme') === 'dark')
+        document.documentElement.setAttribute('data-theme', 'dark');
+    })();
+  </script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -20,6 +26,82 @@
       --muted:   #6b7280;
       --bg-soft: #f8f9fb;
     }
+    /* ── DARK MODE ── */
+    [data-theme="dark"] body { background: #12141f; color: #d1d5db; }
+    [data-theme="dark"] nav {
+      background: rgba(15,17,28,0.96);
+      border-color: #2a2d3e;
+    }
+    [data-theme="dark"] .nav-links a { color: #9ca3af; }
+    [data-theme="dark"] .nav-links a:hover { color: var(--accent); }
+    [data-theme="dark"] .btn-outline { border-color: #5c667a; color: #9ca3af; }
+    [data-theme="dark"] .btn-outline:hover { background: #5c667a; color: white; }
+    [data-theme="dark"] .btn-primary-nav { background: #4a5268; border-color: #4a5268; }
+    [data-theme="dark"] .mobile-nav { background: #1a1d2e; border-color: #2a2d3e; }
+    [data-theme="dark"] .mobile-nav a { color: #d1d5db; border-color: #2a2d3e; }
+    [data-theme="dark"] .hero {
+      background: linear-gradient(160deg, #0f1117 0%, #1a1d2e 50%, #0d1410 100%);
+    }
+    [data-theme="dark"] .hero h1 { color: #f1f5f9; }
+    [data-theme="dark"] .hero .highlight { color: var(--accent); }
+    [data-theme="dark"] .hero p { color: #9ca3af; }
+    [data-theme="dark"] .hero-badge {
+      background: rgba(244,185,96,0.1);
+      border-color: rgba(244,185,96,0.2);
+      color: var(--accent);
+    }
+    [data-theme="dark"] .btn-hero-secondary {
+      background: #1e2235; color: #d1d5db; border-color: #2a2d3e;
+    }
+    [data-theme="dark"] .btn-hero-secondary:hover {
+      border-color: var(--brand); background: #252a40;
+    }
+    [data-theme="dark"] .features { background: #12141f; }
+    [data-theme="dark"] .section-title { color: #f1f5f9; }
+    [data-theme="dark"] .section-subtitle { color: #9ca3af; }
+    [data-theme="dark"] .feature-card {
+      background: linear-gradient(145deg, #1e2235, #252a40);
+      border-color: #2a2d3e;
+    }
+    [data-theme="dark"] .feature-card h3 { color: #f1f5f9; }
+    [data-theme="dark"] .feature-card p { color: #9ca3af; }
+    [data-theme="dark"] .detail-section { background: #12141f; }
+    [data-theme="dark"] .detail-text h2 { color: #f1f5f9; }
+    [data-theme="dark"] .detail-text p { color: #9ca3af; }
+    [data-theme="dark"] .feature-list li { color: #d1d5db; }
+    [data-theme="dark"] .detail-visual {
+      background: linear-gradient(135deg, #1e2235, #252a40);
+      border-color: #2a2d3e;
+    }
+    [data-theme="dark"] .mock-card {
+      background: #1e2235; border-color: #2a2d3e;
+    }
+    [data-theme="dark"] .mock-company { color: #f1f5f9; }
+    [data-theme="dark"] .mock-program { color: #8892a4; }
+    [data-theme="dark"] footer { background: #0a0c14; }
+    [data-theme="dark"] footer p { color: #6b7280; }
+
+    /* ── DARK MODE TOGGLE BUTTON (in nav) ── */
+    .nav-dark-toggle {
+      width: 2rem; height: 2rem;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; cursor: pointer;
+      background: rgba(92,102,122,0.1);
+      border: 1px solid var(--border);
+      font-size: 0.9rem; transition: all 0.2s;
+      padding: 0; line-height: 1;
+      flex-shrink: 0;
+    }
+    .nav-dark-toggle:hover {
+      background: rgba(92,102,122,0.2);
+      transform: rotate(20deg);
+      border-color: var(--accent);
+    }
+    [data-theme="dark"] .nav-dark-toggle {
+      background: rgba(255,255,255,0.06);
+      border-color: #2a2d3e;
+    }
+
 
     html { scroll-behavior: smooth; }
 
@@ -396,6 +478,16 @@
       .step-item:hover    { transform: none; }
       .mock-card:hover    { transform: none; }
     }
+
+    /* Explicitly no arrow on CTA buttons */
+    .btn-hero-primary::after,
+    .btn-hero-secondary::after,
+    .btn-cta::after,
+    .btn-primary-nav::after,
+    .btn-outline::after {
+      content: none !important;
+      display: none !important;
+    }
   </style>
 </head>
 <body>
@@ -411,8 +503,9 @@
       <li><a href="#about">About</a></li>
     </ul>
     <div class="nav-cta">
+      <button class="nav-dark-toggle" id="navDarkToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
       <a href="pages/login.html" class="btn-outline">Sign In</a>
-      <a href="pages/login.html" class="btn-primary-nav">Sign Up →</a>
+      <a href="pages/login.html" class="btn-primary-nav">Sign Up</a>
     </div>
     <button class="nav-hamburger" id="navHamburger" aria-label="Toggle navigation">
       <span></span><span></span><span></span>
@@ -426,7 +519,7 @@
     <a href="#about" onclick="closeMobileNav()">About</a>
     <div class="mobile-cta">
       <a href="pages/login.html" class="btn-outline" style="flex:1;text-align:center">Sign In</a>
-      <a href="pages/login.html" class="btn-primary-nav" style="flex:1;text-align:center">Sign Up →</a>
+      <a href="pages/login.html" class="btn-primary-nav" style="flex:1;text-align:center">Sign Up</a>
     </div>
   </div>
 
@@ -439,7 +532,7 @@
       track deadlines, monitor interview stages, and never miss an opportunity again.
     </p>
     <div class="hero-actions">
-      <a href="pages/login.html" class="btn-hero-primary">Get Started Free →</a>
+      <a href="pages/login.html" class="btn-hero-primary">Get Started Free</a>
       <a href="#features" class="btn-hero-secondary">See features</a>
     </div>
   </section>
@@ -459,8 +552,8 @@
       <div class="label">Core modules</div>
     </div>
     <div class="stat-item">
-      <div class="num">Real<span>-time</span></div>
-      <div class="label">Cloud sync via Supabase</div>
+      <div class="num"><span>☁️</span></div>
+      <div class="label">Cloud sync</div>
     </div>
   </div>
 
@@ -541,17 +634,18 @@
   <section class="detail-section" id="about">
     <div class="detail-grid">
       <div class="detail-text">
-        <span class="section-label">Application Management</span>
-        <h2>Your applications, organized by priority</h2>
+        <span class="section-label">About CareerTracker</span>
+        <h2>Built for real job seekers, by someone who needed it</h2>
         <p>
-          Drag and drop to reorder applications by priority. The system ensures no duplicate
-          priority numbers — every role has its rightful rank.
+          CareerTracker was born from the frustration of juggling dozens of applications, interviews,
+          and deadlines across scattered spreadsheets. We built the tool we wished we had —
+          simple, fast, and free forever.
         </p>
         <ul class="feature-list">
-          <li><span class="check">✓</span> Drag-and-drop priority reordering</li>
-          <li><span class="check">✓</span> No duplicate priorities — always clean order</li>
-          <li><span class="check">✓</span> Status tags: Active, Pending, Rejected, Discontinued</li>
-          <li><span class="check">✓</span> Auto-shows nearest upcoming interview stage</li>
+          <li><span class="check">✓</span> 100% free — no subscription, no hidden cost</li>
+          <li><span class="check">✓</span> Cloud-synced — access from any device, anywhere</li>
+          <li><span class="check">✓</span> Privacy-first — your data stays yours</li>
+          <li><span class="check">✓</span> No email required — sign up in seconds</li>
         </ul>
       </div>
       <div class="detail-visual">
@@ -584,31 +678,45 @@
   <section class="cta-section">
     <h2>Ready to take control of your job search?</h2>
     <p>Join CareerTracker today — it's completely free. Start organizing your applications and track your path to your dream job.</p>
-    <a href="pages/login.html" class="btn-cta">Sign Up — It's Free →</a>
+    <a href="pages/login.html" class="btn-cta">Sign Up — It's Free</a>
   </section>
 
   <!-- FOOTER -->
   <footer>
     <div class="footer-logo">Career<span>Tracker</span></div>
     <p>Track your journey. Land your dream job.</p>
-    <p style="margin-top:0.5rem;font-size:0.75rem">Built with ❤️ using Supabase</p>
   </footer>
 
   <script>
     // Mobile nav toggle
     const hamburger = document.getElementById('navHamburger');
     const mobileNav = document.getElementById('mobileNav');
-    hamburger.addEventListener('click', () => {
-      mobileNav.classList.toggle('open');
-    });
-    function closeMobileNav() {
-      mobileNav.classList.remove('open');
-    }
-    // Close on outside click
+    hamburger.addEventListener('click', () => mobileNav.classList.toggle('open'));
+    function closeMobileNav() { mobileNav.classList.remove('open'); }
     document.addEventListener('click', (e) => {
-      if (!hamburger.contains(e.target) && !mobileNav.contains(e.target)) {
+      if (!hamburger.contains(e.target) && !mobileNav.contains(e.target))
         mobileNav.classList.remove('open');
+    });
+
+    // Dark mode toggle
+    const darkToggle = document.getElementById('navDarkToggle');
+    const htmlEl = document.documentElement;
+    function syncDarkIcon() {
+      const isDark = htmlEl.getAttribute('data-theme') === 'dark';
+      darkToggle.textContent = isDark ? '☀️' : '🌙';
+      darkToggle.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+    }
+    syncDarkIcon();
+    darkToggle.addEventListener('click', function () {
+      const isDark = htmlEl.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        htmlEl.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+      } else {
+        htmlEl.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
       }
+      syncDarkIcon();
     });
   </script>
 
