@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feature Requests — CareerTracker</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/layout.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/modal.css" />
+  <link rel="stylesheet" href="../assets/css/mobile.css" />
+  <link rel="stylesheet" href="../assets/css/theme.css" />
+  <script>(function(){ if(localStorage.getItem('theme')==='dark') document.documentElement.setAttribute('data-theme','dark'); })();</script>
+  <style>
+    .page-content { padding: calc(var(--topbar-h) + 1.25rem) 1.5rem 3rem; max-width: 980px; margin: 0 auto; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--brand); font-weight: 600; text-decoration: none; margin-bottom: 1.25rem; }
+    .page-header { margin-bottom: 1.5rem; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .page-header-text h1 { font-size: 1.5rem; font-weight: 800; color: var(--dark); }
+    .page-header-text p { font-size: 0.85rem; color: var(--muted); margin-top: 0.3rem; }
+
+    /* Layout */
+    .board { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; align-items: start; }
+    .board-sidebar { position: sticky; top: calc(var(--topbar-h) + 1.5rem); }
+
+    /* Submit card */
+    .submit-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1.25rem; }
+    .scard-head { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); background: var(--card-bg); }
+    .scard-head h3 { font-size: 0.9rem; font-weight: 700; color: var(--dark); }
+    .scard-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.875rem; }
+    .fgroup { display: flex; flex-direction: column; gap: 0.3rem; }
+    .fgroup label { font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .fgroup input, .fgroup select, .fgroup textarea {
+      padding: 0.65rem 0.875rem; border: 1.5px solid var(--border); border-radius: var(--radius-md);
+      font-size: 0.85rem; font-family: "Poppins", sans-serif; color: var(--text); background: var(--surface);
+      outline: none; transition: border-color 0.2s; width: 100%; box-sizing: border-box;
+    }
+    .fgroup input:focus, .fgroup select:focus, .fgroup textarea:focus { border-color: var(--brand); }
+    .fgroup textarea { resize: vertical; min-height: 90px; }
+    .fgroup select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat:no-repeat; background-position:right 0.75rem center; background-size:1rem; padding-right:2.5rem; }
+    .btn-submit-fr { width: 100%; padding: 0.65rem; background: var(--brand); color: white; border: none; border-radius: var(--radius-md); font-size: 0.88rem; font-weight: 700; font-family: "Poppins", sans-serif; cursor: pointer; transition: all 0.2s; }
+    .btn-submit-fr:hover { background: var(--brand-dark); }
+    .btn-submit-fr:disabled { opacity: 0.6; cursor: not-allowed; }
+    .tip-card { background: rgba(92,102,122,0.06); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
+
+    /* Toolbar */
+    .toolbar { display: flex; gap: 0.6rem; margin-bottom: 1.25rem; flex-wrap: wrap; align-items: center; }
+    .filt-btn { padding: 0.35rem 0.875rem; border-radius: 2rem; font-size: 0.78rem; font-weight: 600; border: 1.5px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-family: "Poppins", sans-serif; transition: all 0.2s; white-space: nowrap; }
+    .filt-btn.active, .filt-btn:hover { border-color: var(--brand); color: var(--brand); background: rgba(92,102,122,0.08); }
+    .sort-sel { padding: 0.35rem 0.75rem; border: 1.5px solid var(--border); border-radius: var(--radius-md); font-size: 0.78rem; background: var(--surface); color: var(--text); cursor: pointer; font-family: "Poppins", sans-serif; margin-left: auto; }
+
+    /* Feature cards */
+    .features { display: flex; flex-direction: column; gap: 0.875rem; }
+    .fc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: box-shadow 0.2s; }
+    .fc:hover { box-shadow: var(--shadow-sm); }
+    .fc-top { padding: 1.25rem; display: flex; gap: 1rem; align-items: flex-start; cursor: pointer; }
+    .vote-col { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; flex-shrink: 0; width: 44px; }
+    .vote-btn { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--border); background: var(--card-bg); font-size: 0.95rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+    .vote-btn:hover { border-color: var(--brand); background: rgba(92,102,122,0.08); }
+    .vote-btn.voted { border-color: var(--brand); background: var(--brand); color: white; }
+    .vote-count { font-size: 0.95rem; font-weight: 800; color: var(--dark); }
+    .vote-lbl { font-size: 0.62rem; color: var(--muted); font-weight: 600; }
+    .fc-body { flex: 1; min-width: 0; }
+    .fc-tags { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    .tag { padding: 0.18rem 0.6rem; border-radius: 2rem; font-size: 0.68rem; font-weight: 700; background: var(--card-bg); border: 1px solid var(--border); color: var(--muted); }
+    .status-pill { padding: 0.18rem 0.6rem; border-radius: 2rem; font-size: 0.68rem; font-weight: 700; }
+    .sp-open { background:rgba(59,130,246,0.1);color:#2563eb; }
+    .sp-planned { background:rgba(168,85,247,0.1);color:#7c3aed; }
+    .sp-in-progress { background:rgba(245,158,11,0.12);color:#d97706; }
+    .sp-released { background:rgba(34,197,94,0.1);color:#15803d; }
+    .sp-rejected { background:rgba(239,68,68,0.08);color:#dc2626; }
+    .fc-title { font-size: 0.92rem; font-weight: 700; color: var(--dark); margin-bottom: 0.3rem; }
+    .fc-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+    .fc-meta { font-size: 0.7rem; color: var(--muted); margin-top: 0.5rem; display: flex; gap: 0.875rem; flex-wrap: wrap; }
+    .expand-hint { font-size: 0.72rem; color: var(--brand); margin-left: auto; font-weight: 600; }
+
+    /* Komentar section */
+    .fc-comments { border-top: 1px solid var(--border); padding: 1.25rem; background: var(--card-bg); display: none; }
+    .fc.open .fc-comments { display: block; }
+    .admin-status-bar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.875rem; border-bottom: 1px solid var(--border); }
+    .admin-status-bar label { font-size: 0.75rem; font-weight: 700; color: #a07020; }
+    [data-theme="dark"] .admin-status-bar label { color: #f4b960; }
+    .admin-stat-sel { padding: 0.35rem 0.75rem; border: 1px solid rgba(244,185,96,0.35); border-radius: var(--radius-sm); font-size: 0.8rem; background: var(--surface); color: var(--text); font-family: "Poppins", sans-serif; cursor: pointer; }
+    .comment-list { display: flex; flex-direction: column; gap: 0.875rem; margin-bottom: 1rem; }
+    .comment { display: flex; gap: 0.75rem; }
+    .c-av { width: 32px; height: 32px; border-radius: 50%; background: var(--brand); display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 800; color: white; flex-shrink: 0; }
+    .c-av.admin-av { background: linear-gradient(135deg,#f4b960,#d97706); }
+    .c-content { flex: 1; min-width: 0; }
+    .c-header { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.25rem; flex-wrap: wrap; }
+    .c-author { font-size: 0.8rem; font-weight: 700; color: var(--dark); }
+    .admin-chip { display: inline-block; background: rgba(244,185,96,0.15); border: 1px solid rgba(244,185,96,0.3); color: #a07020; font-size: 0.62rem; font-weight: 700; padding: 1px 6px; border-radius: 2rem; }
+    [data-theme="dark"] .admin-chip { color: #f4b960; }
+    .c-time { font-size: 0.68rem; color: var(--muted); }
+    .c-body { font-size: 0.82rem; color: var(--text); line-height: 1.6; }
+    .no-comments { font-size: 0.8rem; color: var(--muted); text-align: center; padding: 1rem; }
+    .comment-input { display: flex; gap: 0.75rem; align-items: flex-end; }
+    .comment-input textarea { flex: 1; resize: none; border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 0.6rem 0.875rem; font-size: 0.85rem; font-family: "Poppins", sans-serif; color: var(--text); background: var(--surface); outline: none; min-height: 40px; max-height: 100px; transition: border-color 0.2s; }
+    .comment-input textarea:focus { border-color: var(--brand); }
+    .btn-comment { padding: 0.55rem 1rem; background: var(--brand); color: white; border: none; border-radius: var(--radius-md); font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: "Poppins", sans-serif; flex-shrink: 0; }
+    .btn-comment:hover { background: var(--brand-dark); }
+
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+
+    @media (max-width: 760px) { .board { grid-template-columns: 1fr; } .board-sidebar { position: static; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="left-section">
+      <div id="toggleBtn">☰</div>
+      <a href="home.html" class="logo">Career<span>Tracker</span></a>
+    </div>
+    <div class="right-section">
+      <button class="lang-btn" title="Switch language">🇬🇧 EN</button>
+      <button id="darkModeToggle">🌙</button>
+      <div class="profile" id="profileBtn">
+        <span id="topbarDisplayName">-</span>
+        <div class="avatar" id="topbarAvatar"></div>
+      </div>
+    </div>
+  </header>
+  <aside class="sidebar" id="sidebar">
+    <div class="menu">
+      <a href="home.html" class="menu-item">🏠 <span data-i18n="nav_home">Home</span></a>
+      <a href="how-to-use.html" class="menu-item">📖 <span data-i18n="nav_how_to_use">How to Use</span></a>
+      <a href="about.html" class="menu-item active">ℹ️ <span data-i18n="nav_about">About</span></a>        <div id="adminMenu" style="display:none">
+          <div class="admin-menu-label">Admin Panel</div>
+          <a href="contact-email.html"   class="menu-item admin-item">✉️ <span>Messages</span></a>
+          <a href="contact-bug.html"     class="menu-item admin-item">🐛 <span>Bug Reports</span></a>
+          <a href="contact-feature.html" class="menu-item admin-item">💡 <span>Feature Requests</span></a>
+        </div>
+      </div>
+  </aside>
+  <div id="sidebarOverlay"></div>
+  <div class="profile-dropdown" id="dropdown">
+    <div data-i18n="nav_profile">👤 Profile</div>
+    <div id="cvLink" data-i18n="nav_my_cv">📄 My CV</div>
+    <div id="contactLink" data-i18n="nav_contact">💬 Contact Us</div>
+    <hr />
+    <div class="logout" data-i18n="nav_sign_out">🚪 Sign Out</div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="page-content">
+      <a href="about.html" class="back-link">← About</a>
+      <div class="page-header">
+        <div class="page-header-text">
+          <h1>💡 <span data-i18n="feat_title">Permintaan Fitur</span></h1>
+          <p>Share ideas, vote on what matters, and discuss features openly with the community.</p>
+        </div>
+      </div>
+
+      <div class="board">
+        <!-- Main: list -->
+        <div class="board-main">
+          <div class="toolbar">
+            <button class="filt-btn active" data-filter="all">All</button>
+            <button class="filt-btn" data-filter="open">Open</button>
+            <button class="filt-btn" data-filter="planned">Planned</button>
+            <button class="filt-btn" data-filter="in-progress">In Progress</button>
+            <button class="filt-btn" data-filter="released">Released ✅</button>
+            <select class="sort-sel" id="sortSel">
+              <option value="votes">Most Voted</option>
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+            </select>
+          </div>
+          <div class="features" id="featuresList">
+            <div class="empty-state"><div class="empty-icon">💭</div><p>Memuat...</p></div>
+          </div>
+        </div>
+
+        <!-- Sidebar: submit -->
+        <div class="board-sidebar">
+          <div class="submit-card">
+            <div class="scard-head"><h3>💡 Submit a Request</h3></div>
+            <div class="scard-body">
+              <div class="fgroup">
+                <label>Title *</label>
+                <input type="text" id="frTitle" placeholder="Short, clear feature name" />
+              </div>
+              <div class="fgroup">
+                <label>Kategori</label>
+                <select id="frKategori">
+                  <option value="general">💬 General</option>
+                  <option value="ui">🎨 UI / Design</option>
+                  <option value="functionality">⚙️ Functionality</option>
+                  <option value="integration">🔗 Integration</option>
+                  <option value="performance">⚡ Performance</option>
+                  <option value="other">📦 Other</option>
+                </select>
+              </div>
+              <div class="fgroup">
+                <label>Deskripsi *</label>
+                <textarea id="frDesc" placeholder="Describe the feature and how it would help..."></textarea>
+              </div>
+              <button class="btn-submit-fr" id="submitFRBtn">💡 Submit</button>
+            </div>
+          </div>
+          <div class="tip-card">
+            💡 <strong>Tip:</strong> Search existing requests first to avoid duplicates. Click any card to expand and join the discussion!
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="../assets/js/darkMode.js"></script>
+  <script src="../assets/js/supabaseClient.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/ui.js"></script>
+  <script src="../assets/js/i18n.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const db = window.supabaseClient;
+      const username = localStorage.getItem("currentUser");
+      const isAdmin = username === "admin";
+      let features = [];
+      let myVotes = new Set();
+      let activeFilter = "all";
+      let sortMode = "votes";
+      let expandedId = null;
+
+      function escHtml(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+      function fmtDate(d) { return new Date(d).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}); }
+      function catLabel(c) { return {general:"💬 General",ui:"🎨 UI",functionality:"⚙️ Functionality",integration:"🔗 Integration",performance:"⚡ Performance",other:"📦 Other"}[c]||c; }
+      function statLabel(s) { return {open:"Open",planned:"Planned",  "in-progress":"In Progress",released:"Released ✅",rejected:"Rejected"}[s]||s; }
+      function statClass(s) { return "status-pill sp-"+s.replace(" ","-"); }
+      function avLetter(u) { return (u||"?")[0].toUpperCase(); }
+
+      async function loadVotes() {
+        const { data } = await db.from("feature_votes").select("feature_id").eq("username", username);
+        myVotes = new Set((data||[]).map(v => v.feature_id));
+      }
+
+      async function loadFeatures() {
+        const { data, error } = await db.from("feature_requests").select("*");
+        if (error) {
+          const isRLS = error.message && (error.message.includes("permission") || error.message.includes("denied") || error.message.includes("policy"));
+          document.getElementById("featuresList").innerHTML = isRLS
+            ? '<div class="empty-state"><div class="empty-icon">⚠️</div><p>Supabase RLS aktif.<br><small>Tambahkan policy untuk tabel feature_requests.</small></p></div>'
+            : '<div class="empty-state"><div class="empty-icon">💭</div><p>Belum ada permintaan fitur.</p></div>';
+          return;
+        }
+        features = data || [];
+        renderFeatures();
+      }
+
+      function renderFeatures() {
+        let items = [...features];
+        if (activeFilter !== "all") items = items.filter(f => f.status === activeFilter);
+        if (sortMode === "votes") items.sort((a,b) => b.upvotes - a.upvotes);
+        else if (sortMode === "newest") items.sort((a,b) => new Date(b.created_at)-new Date(a.created_at));
+        else items.sort((a,b) => new Date(a.created_at)-new Date(b.created_at));
+
+        const el = document.getElementById("featuresList");
+        if (items.length === 0) {
+          el.innerHTML = '<div class="empty-state"><div class="empty-icon">💭</div><p>No feature requests match this filter yet.</p></div>';
+          return;
+        }
+
+        el.innerHTML = items.map(f => {
+          const voted = myVotes.has(f.id);
+          const isOpen = expandedId === f.id;
+          return `
+            <div class="fc${isOpen?" open":""}" data-id="${f.id}">
+              <div class="fc-top">
+                <div class="vote-col">
+                  <button class="vote-btn${voted?" voted":""}" data-fid="${f.id}" title="${voted?"Remove vote":"Upvote this idea"}">${voted?"▲":"△"}</button>
+                  <div class="vote-count">${f.upvotes}</div>
+                  <div class="vote-lbl">votes</div>
+                </div>
+                <div class="fc-body">
+                  <div class="fc-tags">
+                    <span class="tag">${catLabel(f.category)}</span>
+                    <span class="${statClass(f.status)}">${statLabel(f.status)}</span>
+                  </div>
+                  <div class="fc-title">${escHtml(f.title)}</div>
+                  <div class="fc-desc">${escHtml(f.description)}</div>
+                  <div class="fc-meta">
+                    <span>👤 ${f.author_username===username?"You":escHtml(f.author_username)}</span>
+                    <span>🗓 ${fmtDate(f.created_at)}</span>
+                    <span class="expand-hint">${isOpen?"▲ Collapse":"💬 Comment"}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="fc-comments" id="cmt-${f.id}">
+                ${isAdmin ? `
+                <div class="admin-status-bar">
+                  <label>👑 Status:</label>
+                  <select class="admin-stat-sel" onchange="updateFRStatus('${f.id}',this.value)">
+                    <option value="open"${f.status==="open"?" selected":""}>Open</option>
+                    <option value="planned"${f.status==="planned"?" selected":""}>Planned</option>
+                    <option value="in-progress"${f.status==="in-progress"?" selected":""}>In Progress</option>
+                    <option value="released"${f.status==="released"?" selected":""}>Released ✅</option>
+                    <option value="rejected"${f.status==="rejected"?" selected":""}>Rejected</option>
+                  </select>
+                </div>` : ""}
+                <div class="comment-list" id="cl-${f.id}"><div class="no-comments">Loading comments...</div></div>
+                <div class="comment-input">
+                  <textarea id="ci-${f.id}" placeholder="Add a comment..." rows="2"></textarea>
+                  <button class="btn-comment" onclick="postComment('${f.id}')">Kirim</button>
+                </div>
+              </div>
+            </div>`;
+        }).join("");
+
+        // Vote buttons
+        el.querySelectorAll(".vote-btn").forEach(btn => {
+          btn.addEventListener("click", async e => {
+            e.stopPropagation();
+            await toggleVote(btn.dataset.fid);
+          });
+        });
+
+        // Expand cards
+        el.querySelectorAll(".fc-top").forEach(top => {
+          top.addEventListener("click", async () => {
+            const card = top.closest(".fc");
+            const id = card.dataset.id;
+            if (expandedId === id) {
+              expandedId = null;
+              card.classList.remove("open");
+            } else {
+              document.querySelectorAll(".fc.open").forEach(c => c.classList.remove("open"));
+              expandedId = id;
+              card.classList.add("open");
+              loadKomentar(id);
+            }
+          });
+        });
+
+        // Load comments for already-expanded
+        if (expandedId) loadKomentar(expandedId);
+      }
+
+      async function loadKomentar(fid) {
+        const { data } = await db.from("feature_comments").select("*").eq("feature_id",fid).order("created_at",{ascending:true});
+        const el = document.getElementById("cl-"+fid);
+        if (!el) return;
+        if (!data || data.length === 0) { el.innerHTML = '<div class="no-comments">Belum ada komentar. Be the first! 👋</div>'; return; }
+        el.innerHTML = data.map(c => `
+          <div class="comment">
+            <div class="c-av${c.is_admin?" admin-av":""}">${avLetter(c.author_username)}</div>
+            <div class="c-content">
+              <div class="c-header">
+                <span class="c-author">${escHtml(c.author_username)}${c.author_username===username?" (You)":""}</span>
+                ${c.is_admin?'<span class="admin-chip">ADMIN</span>':""}
+                <span class="c-time">${fmtDate(c.created_at)}</span>
+              </div>
+              <div class="c-body">${escHtml(c.body)}</div>
+            </div>
+          </div>`).join("");
+      }
+
+      window.postComment = async fid => {
+        const input = document.getElementById("ci-"+fid);
+        const body = input?.value.trim();
+        if (!body) return;
+        const { error } = await db.from("feature_comments").insert({feature_id:fid, author_username:username, body, is_admin:isAdmin});
+        if (error) { showAlert("Failed: "+error.message); return; }
+        input.value = "";
+        await loadKomentar(fid);
+      };
+
+      async function toggleVote(fid) {
+        const voted = myVotes.has(fid);
+        const feat = features.find(f => f.id === fid);
+        if (!feat) return;
+        if (voted) {
+          const { error } = await db.from("feature_votes").delete().eq("feature_id",fid).eq("username",username);
+          if (!error) {
+            myVotes.delete(fid);
+            await db.from("feature_requests").update({upvotes: Math.max(0, feat.upvotes-1)}).eq("id",fid);
+          }
+        } else {
+          const { error } = await db.from("feature_votes").insert({feature_id:fid, username});
+          if (!error) {
+            myVotes.add(fid);
+            await db.from("feature_requests").update({upvotes: feat.upvotes+1}).eq("id",fid);
+          } else if (error.code === "23505") {
+            // Already voted (duplicate key), just add to myVotes
+            myVotes.add(fid);
+          }
+        }
+        await loadFeatures();
+      }
+
+      window.updateFRStatus = async (fid, status) => {
+        await db.from("feature_requests").update({status, updated_at: new Date().toISOString()}).eq("id",fid);
+        await loadFeatures();
+      };
+
+      // Submit
+      document.getElementById("submitFRBtn").addEventListener("click", async () => {
+        const title = document.getElementById("frTitle").value.trim();
+        const desc = document.getElementById("frDesc").value.trim();
+        const category = document.getElementById("frKategori").value;
+        if (!title || !desc) { showAlert("Please fill in the title and description."); return; }
+        const btn = document.getElementById("submitFRBtn");
+        btn.disabled = true; btn.textContent = "Submitting...";
+        const { error } = await db.from("feature_requests").insert({author_username:username, title, description:desc, category});
+        btn.disabled = false; btn.textContent = "💡 Submit";
+        if (error) { showAlert("Failed: "+error.message); return; }
+        document.getElementById("frTitle").value = "";
+        document.getElementById("frDesc").value = "";
+        showAlert("Feature request submitted! ✅ Thank you for your idea.");
+        await loadFeatures();
+      });
+
+      // Filters + sort
+      document.querySelectorAll(".filt-btn").forEach(b => {
+        b.addEventListener("click", () => {
+          document.querySelectorAll(".filt-btn").forEach(x => x.classList.remove("active"));
+          b.classList.add("active");
+          activeFilter = b.dataset.filter;
+          expandedId = null;
+          renderFeatures();
+        });
+      });
+      document.getElementById("sortSel").addEventListener("change", e => {
+        sortMode = e.target.value;
+        renderFeatures();
+      });
+
+      await loadVotes();
+      await loadFeatures();
+    });
+  </script>
+</body>
+</html>

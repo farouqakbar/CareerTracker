@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us — CareerTracker</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/layout.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/modal.css" />
+  <link rel="stylesheet" href="../assets/css/mobile.css" />
+  <link rel="stylesheet" href="../assets/css/theme.css" />
+  <script>(function(){ if(localStorage.getItem('theme')==='dark') document.documentElement.setAttribute('data-theme','dark'); })();</script>
+  <style>
+    .page-content {
+      padding: calc(var(--topbar-h) + 1.25rem) 1.5rem 3rem;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+    .contact-hero {
+      background: linear-gradient(135deg, #1a1d2e 0%, #2d3252 60%, #1e2445 100%);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 2rem;
+      margin-bottom: 1.75rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-hero::before {
+      content:""; position:absolute; inset:0;
+      background: radial-gradient(ellipse at 20% 50%, rgba(92,102,122,0.25) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 50%, rgba(244,185,96,0.1) 0%, transparent 50%);
+    }
+    .contact-hero::after {
+      content:""; position:absolute; top:0; left:0; right:0; height:3px;
+      background: linear-gradient(90deg, var(--brand) 0%, #7c8aff 50%, var(--accent) 100%);
+    }
+    .contact-hero .hero-icon { font-size:2.5rem; margin-bottom:.75rem; position:relative; z-index:1; }
+    .contact-hero h1 { font-size:clamp(1.5rem,4vw,2.25rem); font-weight:800; color:white; margin-bottom:.4rem; position:relative; z-index:1; }
+    .contact-hero h1 span { color:var(--accent); }
+    .contact-hero p { font-size:.85rem; color:rgba(255,255,255,0.5); max-width:440px; margin:0 auto; line-height:1.7; position:relative; z-index:1; }
+
+    .section-label { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:.875rem; display:flex; align-items:center; gap:.75rem; }
+    .section-label::after { content:""; flex:1; height:1px; background:var(--border); }
+
+    .channels-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:1.75rem; }
+    .channel-card {
+      background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius-lg);
+      padding:1.5rem 1.125rem; text-align:center; text-decoration:none; color:inherit;
+      display:flex; flex-direction:column; align-items:center; gap:.5rem;
+      transition:all .25s ease; position:relative; overflow:hidden;
+    }
+    .channel-card::before { content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--ch-color,var(--brand)); opacity:0; transition:opacity .25s; }
+    .channel-card:hover { transform:translateY(-4px); box-shadow:0 12px 32px rgba(0,0,0,0.1); border-color:var(--ch-color,var(--brand)); }
+    .channel-card:hover::before { opacity:1; }
+    .ch-icon { width:3rem; height:3rem; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; font-size:1.4rem; background:var(--card-bg); border:1px solid var(--border); margin-bottom:.25rem; }
+    .channel-card h3 { font-size:.875rem; font-weight:700; color:var(--dark); }
+    .channel-card p  { font-size:.75rem; color:var(--muted); line-height:1.5; }
+    .ch-badge { font-size:.62rem; font-weight:700; padding:2px 8px; border-radius:2rem; background:var(--card-bg); color:var(--ch-color,var(--brand)); border:1px solid var(--ch-color,var(--brand)); opacity:.75; }
+
+    .quick-form { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; margin-bottom:1.75rem; }
+    .qf-head { padding:.875rem 1.25rem; border-bottom:1px solid var(--border); background:var(--card-bg); }
+    .qf-head h3 { font-size:.875rem; font-weight:700; color:var(--dark); }
+    .qf-head p  { font-size:.75rem; color:var(--muted); margin-top:2px; }
+    .qf-body { padding:1.25rem; }
+    .type-tabs { display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:1rem; }
+    .type-tab { flex:1; min-width:70px; padding:.4rem .625rem; border:1.5px solid var(--border); border-radius:var(--radius-md); background:transparent; font-family:"Poppins",sans-serif; font-size:.72rem; font-weight:600; color:var(--muted); cursor:pointer; transition:all .2s; text-align:center; }
+    .type-tab.active { border-color:var(--brand); background:rgba(92,102,122,0.08); color:var(--brand); }
+    .type-tab:hover:not(.active) { border-color:var(--brand); color:var(--brand); }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .form-row.full { grid-template-columns:1fr; }
+    .fgroup { display:flex; flex-direction:column; gap:.3rem; }
+    .fgroup label { font-size:.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+    .fgroup input, .fgroup textarea { padding:.625rem .875rem; border:1.5px solid var(--border); border-radius:var(--radius-md); font-size:.875rem; font-family:"Poppins",sans-serif; color:var(--text); background:var(--surface); outline:none; transition:border-color .2s,box-shadow .2s; width:100%; box-sizing:border-box; }
+    .fgroup input:focus,.fgroup textarea:focus { border-color:var(--brand); box-shadow:0 0 0 3px rgba(92,102,122,0.1); }
+    .fgroup textarea { resize:vertical; min-height:100px; }
+    .qf-foot { padding:.875rem 1.25rem; border-top:1px solid var(--border); background:var(--card-bg); display:flex; justify-content:flex-end; align-items:center; gap:.75rem; }
+    .qf-foot small { font-size:.75rem; color:var(--muted); margin-right:auto; }
+    .btn-send { padding:.6rem 1.5rem; background:var(--brand); color:white; border:none; border-radius:var(--radius-md); font-size:.875rem; font-weight:700; font-family:"Poppins",sans-serif; cursor:pointer; transition:all .2s; }
+    .btn-send:hover { background:var(--brand-dark); transform:translateY(-1px); }
+    .btn-send:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+
+    .success-banner { display:none; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.25); border-radius:var(--radius-md); padding:.75rem 1.25rem; margin-bottom:1rem; font-size:.875rem; color:#16a34a; font-weight:600; }
+    .success-banner.show { display:block; }
+    [data-theme="dark"] .success-banner { color:#4ade80; }
+
+    .faq-list { display:flex; flex-direction:column; gap:.4rem; }
+    .faq-item { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden; }
+    .faq-q { padding:.875rem 1.125rem; font-size:.875rem; font-weight:600; color:var(--dark); cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:.75rem; user-select:none; }
+    .faq-q:hover { background:var(--card-bg); }
+    .faq-chevron { font-size:.7rem; color:var(--muted); transition:transform .2s; flex-shrink:0; }
+    .faq-item.open .faq-chevron { transform:rotate(180deg); }
+    .faq-a { max-height:0; overflow:hidden; transition:max-height .3s ease; font-size:.83rem; color:var(--muted); line-height:1.7; }
+    .faq-item.open .faq-a { max-height:200px; padding:0 1.125rem 1rem; }
+
+    @media (max-width:768px) {
+      .page-content { padding:calc(var(--topbar-h) + 1rem) 1rem 2.5rem; }
+      .channels-grid { grid-template-columns:1fr 1fr; }
+      .contact-hero { padding:1.75rem 1.25rem; }
+      .form-row { grid-template-columns:1fr; }
+    }
+    @media (max-width:440px) {
+      .channels-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="left-section">
+      <div id="toggleBtn">☰</div>
+      <a href="home.html" class="logo">Career<span>Tracker</span></a>
+    </div>
+    <div class="right-section">
+      <button class="lang-btn" title="Switch language">🇬🇧 EN</button>
+      <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+      <div class="profile" id="profileBtn">
+        <span id="topbarDisplayName">-</span>
+        <div class="avatar" id="topbarAvatar"></div>
+      </div>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="menu">
+      <a href="home.html" class="menu-item">🏠 <span data-i18n="nav_home">Home</span></a>
+      <a href="how-to-use.html" class="menu-item">📖 <span data-i18n="nav_how_to_use">How to Use</span></a>
+      <a href="about.html" class="menu-item">ℹ️ <span data-i18n="nav_about">About</span></a>
+      <div id="adminMenu" style="display:none">
+        <div class="admin-menu-label">Admin Panel</div>
+        <a href="contact-email.html" class="menu-item admin-item">✉️ <span>Messages</span></a>
+        <a href="contact-bug.html"   class="menu-item admin-item">🐛 <span>Bug Reports</span></a>
+        <a href="contact-feature.html" class="menu-item admin-item">💡 <span>Feature Requests</span></a>
+      </div>
+    </div>
+  </aside>
+  <div id="sidebarOverlay"></div>
+
+  <div class="profile-dropdown" id="dropdown">
+    <div data-i18n="nav_profile">👤 Profile</div>
+    <div id="cvLink" data-i18n="nav_my_cv">📄 My CV</div>
+    <div id="contactLink" data-i18n="nav_contact">💬 Contact Us</div>
+    <hr />
+    <div class="logout" data-i18n="nav_sign_out">🚪 Sign Out</div>
+  </div>
+
+  <main class="main" id="main">
+    <div class="page-content">
+
+      <div class="contact-hero">
+        <div class="hero-icon">💬</div>
+        <h1><span data-i18n="contact_title">Contact</span> <span style="color:var(--accent)">Us</span></h1>
+        <p data-i18n="contact_subtitle">Questions, bug reports, or feature ideas? Pick a channel or send a quick message below.</p>
+      </div>
+
+      <div class="section-label" data-i18n="contact_channels">Contact Channels</div>
+      <div class="channels-grid">
+        <a href="contact-email.html" class="channel-card" style="--ch-color:#5c667a">
+          <div class="ch-icon">✉️</div>
+          <h3 data-i18n="about_email_page_title">Email Admin</h3>
+          <p data-i18n="about_email_desc">Kirim pesan atau pertanyaan ke admin kami</p>
+          <span class="ch-badge">Messaging</span>
+        </a>
+        <a href="contact-bug.html" class="channel-card" style="--ch-color:#ef4444">
+          <div class="ch-icon">🐛</div>
+          <h3 data-i18n="about_bug_page_title">Laporkan Bug</h3>
+          <p data-i18n="about_bug_desc">Menemukan masalah? Bantu kami memperbaikinya</p>
+          <span class="ch-badge">Bug Report</span>
+        </a>
+        <a href="contact-feature.html" class="channel-card" style="--ch-color:#3b82f6">
+          <div class="ch-icon">💡</div>
+          <h3 data-i18n="about_feature_page_title">Permintaan Fitur</h3>
+          <p data-i18n="about_feature_desc">Punya ide fitur? Kami ingin mendengarnya</p>
+          <span class="ch-badge">Ideas</span>
+        </a>
+      </div>
+
+      <div class="section-label" data-i18n="contact_quick">Quick Message</div>
+      <div id="successBanner" class="success-banner"></div>
+      <div class="quick-form">
+        <div class="qf-head">
+          <h3 data-i18n="email_compose_title">Pesan Baru ke Admin</h3>
+          <p data-i18n="email_subtitle">Kirim pesan, pertanyaan, atau saran.</p>
+        </div>
+        <div class="qf-body">
+          <div class="type-tabs" id="typeTabs">
+            <button class="type-tab active" data-type="General">💬 General</button>
+            <button class="type-tab" data-type="Bug">🐛 Bug</button>
+            <button class="type-tab" data-type="Feature">💡 Fitur</button>
+            <button class="type-tab" data-type="Feedback">⭐ Feedback</button>
+          </div>
+          <div class="form-row">
+            <div class="fgroup">
+              <label data-i18n="label_stage_name">Tipe</label>
+              <input type="text" id="msgType" value="General" readonly style="background:var(--card-bg);color:var(--muted);" />
+            </div>
+            <div class="fgroup">
+              <label>Subject</label>
+              <input type="text" id="msgSubject" placeholder="Subjek pesan..." data-i18n-ph="label_search" />
+            </div>
+          </div>
+          <div class="form-row full" style="margin-top:1rem">
+            <div class="fgroup">
+              <label data-i18n="detail_note_label">Pesan</label>
+              <textarea id="msgBody" placeholder="Tulis pesan Anda secara detail..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="qf-foot">
+          <small data-i18n="bug_form_note">Username Anda akan dilampirkan untuk tindak lanjut.</small>
+          <button class="btn-send" id="btnSend" data-i18n="contact_send">Kirim Pesan →</button>
+        </div>
+      </div>
+
+      <div class="section-label" data-i18n="contact_faq">FAQ</div>
+      <div class="faq-list" id="faqList"></div>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="../assets/js/darkMode.js"></script>
+  <script src="../assets/js/supabaseClient.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/ui.js"></script>
+  <script src="../assets/js/i18n.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const lang = localStorage.getItem("ct_lang") || "en";
+      const isID = lang === "id";
+
+      // FAQ bilingual
+      const faqs = [
+        {
+          q: isID ? "Berapa lama untuk mendapat balasan?" : "How long does it take to get a reply?",
+          a: isID ? "Kami biasanya membalas dalam 1–3 hari kerja." : "We typically respond within 1–3 business days."
+        },
+        {
+          q: isID ? "Apakah CareerTracker benar-benar gratis?" : "Is CareerTracker really free?",
+          a: isID ? "Ya! Sepenuhnya gratis tanpa langganan atau biaya tersembunyi." : "Yes! Completely free — no subscriptions, no hidden fees."
+        },
+        {
+          q: isID ? "Bagaimana cara mengubah password?" : "How do I change my password?",
+          a: isID ? "Buka Profil → bagian Ubah Password. Anda perlu password saat ini." : "Go to Profile → Change Password. You'll need your current password."
+        },
+        {
+          q: isID ? "Apakah data saya aman?" : "Is my data private and secure?",
+          a: isID ? "Ya. Data disimpan aman via Supabase dan tidak pernah dibagikan ke pihak ketiga." : "Yes. Data is stored securely via Supabase and never shared with third parties."
+        },
+      ];
+
+      const faqEl = document.getElementById("faqList");
+      faqEl.innerHTML = faqs.map((f,i) => `
+        <div class="faq-item">
+          <div class="faq-q">${f.q} <span class="faq-chevron">▼</span></div>
+          <div class="faq-a">${f.a}</div>
+        </div>`).join("");
+
+      faqEl.querySelectorAll(".faq-q").forEach(q => {
+        q.addEventListener("click", () => {
+          const item = q.parentElement;
+          const open = item.classList.contains("open");
+          faqEl.querySelectorAll(".faq-item").forEach(i => i.classList.remove("open"));
+          if (!open) item.classList.add("open");
+        });
+      });
+
+      // Type tabs
+      document.querySelectorAll(".type-tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+          document.querySelectorAll(".type-tab").forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
+          document.getElementById("msgType").value = tab.dataset.type;
+        });
+      });
+
+      // Send message
+      document.getElementById("btnSend").addEventListener("click", async () => {
+        const type    = document.getElementById("msgType").value;
+        const subject = document.getElementById("msgSubject").value.trim();
+        const body    = document.getElementById("msgBody").value.trim();
+        if (!subject || !body) {
+          alert(isID ? "Harap isi Subjek dan Pesan." : "Please fill in Subject and Message.");
+          return;
+        }
+        const btn = document.getElementById("btnSend");
+        btn.disabled = true;
+        btn.textContent = isID ? "Mengirim..." : "Sending...";
+
+        const username = localStorage.getItem("currentUser");
+        const db = window.supabaseClient;
+        const { error } = await db.from("messages").insert({
+          from_username: username,
+          subject: "[" + type + "] " + subject,
+          body
+        });
+
+        btn.disabled = false;
+        btn.textContent = isID ? "Kirim Pesan →" : "Send Message →";
+
+        if (error) {
+          alert((isID ? "Gagal: " : "Failed: ") + error.message);
+          return;
+        }
+
+        document.getElementById("msgSubject").value = "";
+        document.getElementById("msgBody").value = "";
+        const banner = document.getElementById("successBanner");
+        const key = isID ? "contact_success" : "contact_success";
+        banner.textContent = isID
+          ? "✅ Pesan terkirim! Kami akan segera membalas."
+          : "✅ Message sent! We'll get back to you soon.";
+        banner.classList.add("show");
+        setTimeout(() => banner.classList.remove("show"), 5000);
+      });
+
+      // Re-render FAQ on language change
+      document.addEventListener("ct_langchange", () => location.reload());
+    });
+  </script>
+</body>
+</html>
