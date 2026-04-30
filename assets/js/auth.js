@@ -1,78 +1,134 @@
-// assets/js/auth.js — v2: SHA-256 hash, privacy policy, change password
+// assets/js/auth.js — FINAL (Supabase Auth Unified)
 
-async function hashPassword(password) {
-  const enc = new TextEncoder();
-  const salt = "CareerTracker_2026_salt";
-  const data = enc.encode(salt + password);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+const supabaseUrl = "https://kojsyhaxcrtmmjlqxyme.supabase.co";
+// Ganti nilai ini dengan anon key dari dashboard Supabase kamu:
+// Project Settings → API → Project API keys → anon public
+const supabaseKey = "YOUR_SUPABASE_ANON_KEY";
+
+window.supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+// ==========================
+// 🔷 GET CURRENT USER
+// ==========================
+async function getCurrentUser() {
+  try {
+    const {
+      data: { session },
+    } = await window.supabaseClient.auth.getSession();
+    return session?.user || null;
+  } catch (e) {
+    console.error("getCurrentUser error:", e);
+    return null;
+  }
 }
 
+// ==========================
+// 🔷 SAVE USER TO LOCAL
+// ==========================
+function saveUser(user) {
+  localStorage.setItem("currentUser", user.email);
+  localStorage.setItem(
+    "displayName",
+    user.user_metadata?.full_name || user.email,
+  );
+  localStorage.setItem("profilePhoto", user.user_metadata?.avatar_url || "");
+}
+
+// ==========================
+// 🔷 GOOGLE LOGIN
+// ==========================
+async function loginWithGoogle() {
+  const { error } = await window.supabaseClient.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: "https://farouqakbar.github.io/CareerTracker/pages/home.html",
+    },
+  });
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+}
+
+// ==========================
+// 🔷 EMAIL LOGIN
+// ==========================
+async function loginWithEmail(email, password) {
+  const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) return { success: false, error: error.message };
+
+  if (data?.user) saveUser(data.user);
+  return { success: true };
+}
+
+// ==========================
+// 🔷 REGISTER EMAIL
+// ==========================
+async function register(email, password) {
+  const { data, error } = await window.supabaseClient.auth.signUp({
+    email,
+    password,
+  });
+
+  if (error) return { success: false, error: error.message };
+
+  // Supabase mengirim email verifikasi — beri tahu user
+  return { success: true, data };
+}
+
+// ==========================
+// 🔷 SYNC USER KE DATABASE
+// ==========================
+async function syncUserToDB(user) {
+  if (!user) return;
+
+  const { error } = await window.supabaseClient.from("users").upsert(
+    {
+      username: user.email,
+      display_name: user.user_metadata?.full_name || user.email,
+      profile_photo: user.user_metadata?.avatar_url || "",
+    },
+    { onConflict: "username" },
+  );
+
+  if (error) console.error("syncUserToDB error:", error.message);
+}
+
+// ==========================
+// 🔷 CHANGE PASSWORD
+// ==========================
+async function changePassword(newPassword) {
+  const { error } = await window.supabaseClient.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+}
+
+// ==========================
+// 🔷 LOGOUT
+// ==========================
+async function logout() {
+  await window.supabaseClient.auth.signOut();
+  localStorage.clear();
+
+  const inPages = window.location.pathname.includes("/pages/");
+  window.location.href = inPages ? "login.html" : "pages/login.html";
+}
+
+// ==========================
+// EXPORT
+// ==========================
 window.auth = {
-  hashPassword,
-
-  async login(username, password) {
-    const db = window.supabaseClient;
-    if (!db) return { success: false, error: "Supabase not connected" };
-    const { data, error } = await db.from("users").select("*").eq("username", username.trim()).single();
-    if (error || !data) return { success: false, error: "Username not found" };
-    const hashedInput = await hashPassword(password);
-    const match = data.password_hash === hashedInput || data.password_hash === password;
-    if (!match) return { success: false, error: "Incorrect password" };
-    if (data.password_hash === password) {
-      await db.from("users").update({ password_hash: hashedInput }).eq("username", username.trim());
-    }
-    return { success: true, displayName: data.display_name || username, profilePhoto: data.profile_photo || "" };
-  },
-
-  async register(username, password, privacyAccepted) {
-    const db = window.supabaseClient;
-    if (!db) return { success: false, error: "Supabase not connected" };
-    if (!privacyAccepted) return { success: false, error: "You must accept the Privacy Policy to create an account." };
-    const { data: existing } = await db.from("users").select("username").eq("username", username.trim()).single();
-    if (existing) return { success: false, error: "Username already taken" };
-    const hashed = await hashPassword(password);
-    const { error } = await db.from("users").insert({ username: username.trim(), password_hash: hashed, display_name: username.trim(), privacy_accepted: true, privacy_accepted_at: new Date().toISOString() });
-    if (error) return { success: false, error: "Registration failed: " + error.message };
-    return { success: true };
-  },
-
-  async changePassword(username, currentPassword, newPassword) {
-    const db = window.supabaseClient;
-    if (!db) return { success: false, error: "Supabase not connected" };
-    const { data, error } = await db.from("users").select("password_hash").eq("username", username).single();
-    if (error || !data) return { success: false, error: "User not found" };
-    const hashedCurrent = await hashPassword(currentPassword);
-    const match = data.password_hash === hashedCurrent || data.password_hash === currentPassword;
-    if (!match) return { success: false, error: "Current password is incorrect" };
-    const hashedNew = await hashPassword(newPassword);
-    const { error: updErr } = await db.from("users").update({ password_hash: hashedNew }).eq("username", username);
-    if (updErr) return { success: false, error: "Failed to update password" };
-    return { success: true };
-  },
-
-  async deleteAccount(username) {
-    const db = window.supabaseClient;
-    if (!db) return { success: false, error: "Supabase not connected" };
-    // Hapus semua data milik user ini terlebih dahulu
-    await db.from("applications").delete().eq("username", username);
-    await db.from("vacancies").delete().eq("username", username);
-    await db.from("messages").delete().eq("from_username", username);
-    await db.from("bug_reports").delete().eq("reporter_username", username);
-    await db.from("feature_comments").delete().eq("author_username", username);
-    await db.from("feature_votes").delete().eq("username", username);
-    const { error } = await db.from("users").delete().eq("username", username);
-    if (error) return { success: false, error: error.message };
-    return { success: true };
-  },
-
-  logout() {
-    localStorage.removeItem("currentUser");
-    localStorage.removeItem("displayName");
-    localStorage.removeItem("profilePhoto");
-    const path = window.location.pathname;
-    const inPages = path.includes("/pages/");
-    window.location.href = inPages ? "login.html" : "pages/login.html";
-  },
+  getCurrentUser,
+  saveUser,
+  loginWithGoogle,
+  loginWithEmail,
+  register,
+  syncUserToDB,
+  changePassword,
+  logout,
 };
