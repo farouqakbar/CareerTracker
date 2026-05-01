@@ -1,6 +1,4 @@
-// assets/js/main.js — v3
-// Auto-detect sidebar & profile dropdown elements
-// Tidak bergantung pada id tertentu — cocok dengan struktur HTML apapun
+// assets/js/main.js — v4 (disesuaikan dengan home.html Traqio)
 
 (async () => {
   // ==========================
@@ -38,224 +36,112 @@
 
   // ==========================
   // 🔷 PROFILE DROPDOWN
-  // Coba beberapa id/class yang umum dipakai
+  // HTML: id="profileBtn" → toggle
+  //       id="dropdown"   → menu
   // ==========================
-  const profileToggle =
-    document.getElementById("profileDropdownToggle") ||
-    document.getElementById("profileToggle") ||
-    document.getElementById("topbarAvatar") ||
-    document.querySelector(".profile-toggle") ||
-    document.querySelector(".topbar-profile") ||
-    document.querySelector(".user-avatar");
+  const profileBtn = document.getElementById("profileBtn");
+  const dropdown = document.getElementById("dropdown");
 
-  const profileMenu =
-    document.getElementById("profileDropdownMenu") ||
-    document.getElementById("profileMenu") ||
-    document.querySelector(".profile-dropdown") ||
-    document.querySelector(".dropdown-menu");
+  if (profileBtn && dropdown) {
+    // Sembunyikan dropdown secara default via JS (kalau CSS belum handle)
+    dropdown.style.display = "none";
 
-  if (profileToggle && profileMenu) {
-    // Pastikan menu punya posisi & bisa disembunyikan
-    if (!profileMenu.style.display && !profileMenu.classList.contains("open")) {
-      profileMenu.style.display = "none";
-    }
+    profileBtn.style.cursor = "pointer";
 
-    profileToggle.style.cursor = "pointer";
-
-    profileToggle.addEventListener("click", (e) => {
+    profileBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const isOpen =
-        profileMenu.classList.contains("open") ||
-        profileMenu.style.display === "block";
-
-      if (isOpen) {
-        profileMenu.classList.remove("open");
-        profileMenu.style.display = "none";
-      } else {
-        profileMenu.classList.add("open");
-        profileMenu.style.display = "block";
-      }
+      const isVisible = dropdown.style.display !== "none";
+      dropdown.style.display = isVisible ? "none" : "block";
     });
 
+    // Klik di luar → tutup dropdown
     document.addEventListener("click", (e) => {
-      if (
-        !profileMenu.contains(e.target) &&
-        !profileToggle.contains(e.target)
-      ) {
-        profileMenu.classList.remove("open");
-        profileMenu.style.display = "none";
+      if (!dropdown.contains(e.target) && !profileBtn.contains(e.target)) {
+        dropdown.style.display = "none";
       }
-    });
-
-    console.log(
-      "[main] profile dropdown: OK",
-      profileToggle.id || profileToggle.className,
-    );
-  } else {
-    console.warn("[main] profile dropdown tidak ditemukan.", {
-      toggle: profileToggle,
-      menu: profileMenu,
     });
   }
 
-  // Link di dalam dropdown
-  const NAV_MAP = {
+  // Link di dalam dropdown → navigasi ke halaman
+  // HTML sudah punya: id="cvLink", id="contactLink"
+  // Tambahkan id="profileLink" ke item Profile di dropdown jika perlu
+  const navLinks = {
     profileLink: "profile.html",
     cvLink: "cv.html",
     contactLink: "contact.html",
   };
-  for (const [id, page] of Object.entries(NAV_MAP)) {
+  for (const [id, page] of Object.entries(navLinks)) {
     const el = document.getElementById(id);
-    if (el)
+    if (el) {
+      el.style.cursor = "pointer";
       el.addEventListener("click", () => {
+        dropdown.style.display = "none";
         window.location.href = page;
       });
+    }
   }
 
   // ==========================
   // 🔷 LOGOUT
+  // HTML: class="logout" di dalam #dropdown
   // ==========================
-  const logoutBtn =
-    document.querySelector(".logout") ||
-    document.getElementById("logoutBtn") ||
-    document.querySelector("[data-action='logout']");
+  const logoutBtn = document.querySelector(".logout");
   if (logoutBtn) {
+    logoutBtn.style.cursor = "pointer";
     logoutBtn.addEventListener("click", async (e) => {
       e.preventDefault();
+      dropdown.style.display = "none";
       await window.auth.logout();
     });
   }
 
   // ==========================
   // 🔷 SIDEBAR
-  // Auto-detect tombol buka/tutup & overlay
+  // HTML: id="toggleBtn"      → tombol hamburger (buka)
+  //       id="sidebar"        → panel sidebar
+  //       id="sidebarOverlay" → overlay gelap
+  // Tidak ada tombol close di dalam sidebar → klik overlay untuk tutup
   // ==========================
-  const sidebar =
-    document.getElementById("sidebar") ||
-    document.querySelector(".sidebar") ||
-    document.querySelector("nav.side-nav");
-
-  const sidebarOverlay =
-    document.getElementById("sidebarOverlay") ||
-    document.getElementById("overlay") ||
-    document.querySelector(".sidebar-overlay") ||
-    document.querySelector(".overlay");
-
-  // Tombol buka sidebar: hamburger, menu icon, dll
-  const sidebarOpenBtn =
-    document.getElementById("sidebarOpenBtn") ||
-    document.getElementById("menuBtn") ||
-    document.getElementById("hamburgerBtn") ||
-    document.querySelector(".sidebar-toggle") ||
-    document.querySelector(".hamburger") ||
-    document.querySelector("[data-toggle='sidebar']") ||
-    document.querySelector(".menu-toggle");
-
-  // Tombol tutup sidebar: × di dalam sidebar
-  const sidebarCloseBtn =
-    document.getElementById("sidebarCloseBtn") ||
-    document.getElementById("closeBtn") ||
-    document.querySelector(".sidebar-close") ||
-    document.querySelector(".close-sidebar");
+  const toggleBtn = document.getElementById("toggleBtn");
+  const sidebar = document.getElementById("sidebar");
+  const sidebarOverlay = document.getElementById("sidebarOverlay");
 
   function openSidebar() {
     sidebar?.classList.add("open");
     sidebarOverlay?.classList.add("open");
-    if (sidebarOverlay) sidebarOverlay.style.display = "block";
     document.body.style.overflow = "hidden";
-    console.log("[main] sidebar opened");
   }
 
   function closeSidebar() {
     sidebar?.classList.remove("open");
     sidebarOverlay?.classList.remove("open");
-    if (sidebarOverlay) sidebarOverlay.style.display = "none";
     document.body.style.overflow = "";
-    console.log("[main] sidebar closed");
   }
 
-  if (sidebarOpenBtn) {
-    sidebarOpenBtn.addEventListener("click", openSidebar);
-    console.log(
-      "[main] sidebarOpenBtn: OK",
-      sidebarOpenBtn.id || sidebarOpenBtn.className,
-    );
-  } else {
-    console.warn(
-      "[main] sidebarOpenBtn tidak ditemukan. Tambahkan id='sidebarOpenBtn' ke tombol hamburger.",
-    );
-  }
-
-  if (sidebarCloseBtn) sidebarCloseBtn.addEventListener("click", closeSidebar);
-  if (sidebarOverlay) sidebarOverlay.addEventListener("click", closeSidebar);
+  toggleBtn?.addEventListener("click", openSidebar);
+  sidebarOverlay?.addEventListener("click", closeSidebar);
 
   // Tutup sidebar saat klik link navigasi (mobile)
-  if (sidebar) {
-    sidebar.querySelectorAll("a, .menu-item").forEach((link) => {
-      link.addEventListener("click", closeSidebar);
-    });
-  }
-
-  if (sidebar) {
-    console.log("[main] sidebar: OK", sidebar.id || sidebar.className);
-  } else {
-    console.warn("[main] sidebar tidak ditemukan.");
-  }
+  sidebar?.querySelectorAll(".menu-item").forEach((link) => {
+    link.addEventListener("click", closeSidebar);
+  });
 
   // ==========================
   // 🔷 ACTIVE NAV LINK
   // ==========================
   const currentPage = window.location.pathname.split("/").pop();
-  document
-    .querySelectorAll(".menu-item, .nav-link, .sidebar a")
-    .forEach((item) => {
-      const href = item.getAttribute("href") || "";
-      item.classList.toggle(
-        "active",
-        href === currentPage || href.endsWith("/" + currentPage),
-      );
-    });
+  document.querySelectorAll(".menu-item").forEach((item) => {
+    const href = item.getAttribute("href") || "";
+    item.classList.toggle("active", href === currentPage);
+  });
 
   // ==========================
   // 🔷 ADMIN MENU
+  // HTML: id="adminMenu" dengan style="display:none"
   // ==========================
-  const adminEls = document.querySelectorAll(".admin-only");
-  if (adminEls.length) {
+  const adminMenu = document.getElementById("adminMenu");
+  if (adminMenu) {
     const admin = await window.auth.isAdmin();
-    adminEls.forEach((el) => {
-      el.style.display = admin ? "" : "none";
-    });
+    adminMenu.style.display = admin ? "block" : "none";
   }
-
-  // ==========================
-  // 🔷 DIAGNOSTIC TOOL
-  // Ketik window._diagnose() di console untuk debug
-  // ==========================
-  window._diagnose = () => {
-    const els = {
-      topbarDisplayName: document.getElementById("topbarDisplayName"),
-      topbarAvatar: document.getElementById("topbarAvatar"),
-      profileDropdownToggle: document.getElementById("profileDropdownToggle"),
-      profileDropdownMenu: document.getElementById("profileDropdownMenu"),
-      sidebar: document.getElementById("sidebar"),
-      sidebarOverlay: document.getElementById("sidebarOverlay"),
-      sidebarOpenBtn: document.getElementById("sidebarOpenBtn"),
-      sidebarCloseBtn: document.getElementById("sidebarCloseBtn"),
-      "logoutBtn (.logout)": document.querySelector(".logout"),
-    };
-    console.table(
-      Object.fromEntries(
-        Object.entries(els).map(([k, v]) => [
-          k,
-          v ? "✅ ditemukan" : "❌ tidak ada",
-        ]),
-      ),
-    );
-    console.log("Halaman saat ini:", window.location.pathname);
-    console.log("User:", localStorage.getItem("currentUserEmail"));
-  };
-
-  console.log(
-    "[main] init selesai. Ketik window._diagnose() untuk cek elemen.",
-  );
 })();
