@@ -124,7 +124,7 @@
       <a href="home.html" class="logo">Traq<span>io</span></a>
     </div>
     <div class="right-section">
-      <button class="lang-btn">🇬🇧 <span class="lang-btn-text">EN</span></button>
+      <button class="lang-btn" title="Change language" aria-label="Language">🌐</button>
       <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
       <div class="profile" id="profileBtn">
         <span id="topbarDisplayName">-</span>
@@ -148,7 +148,7 @@
   <div id="sidebarOverlay"></div>
 
   <div class="profile-dropdown" id="dropdown">
-    <div id="profileLink" data-i18n="nav_profile" style="cursor:pointer">👤 Profile</div>
+    <div data-i18n="nav_profile">👤 Profile</div>
     <div id="cvLink" data-i18n="nav_my_cv">📄 My CV</div>
     <div id="contactLink" data-i18n="nav_contact">💬 Contact Us</div>
     <hr />
@@ -239,28 +239,6 @@
     </div>
   </main>
 
-  <!-- Custom Alert Modal -->
-  <div id="customAlertModal" class="modal" style="display:none">
-    <div class="modal-content" style="max-width:380px">
-      <p id="alertMessage" style="margin-bottom:1rem;font-size:0.9rem;line-height:1.6"></p>
-      <div style="display:flex;justify-content:flex-end">
-        <button id="alertOk" class="btn-save" style="min-width:80px">OK</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Custom Confirm Modal -->
-  <div id="customConfirmModal" class="modal" style="display:none">
-    <div class="modal-content" style="max-width:380px">
-      <h2 id="confirmTitle" style="margin-bottom:.5rem;font-size:1rem">Confirm</h2>
-      <p id="confirmMessage" style="margin-bottom:1rem;font-size:0.85rem;white-space:pre-line;line-height:1.6"></p>
-      <div style="display:flex;gap:.75rem;justify-content:flex-end">
-        <button id="confirmNo"  class="btn-cancel" style="min-width:70px">No</button>
-        <button id="confirmYes" class="btn-danger" style="min-width:70px">Yes</button>
-      </div>
-    </div>
-  </div>
-
   <script src="../assets/js/darkMode.js"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="../assets/js/supabaseClient.js"></script>
@@ -283,6 +261,15 @@
       const displayInput = document.getElementById("displayNameInput");
       if (displayInput) displayInput.addEventListener("input", syncAvatarMeta);
       setTimeout(syncAvatarMeta, 600);
+      setInterval(syncAvatarMeta, 1200);
+
+      // Contact Us link in dropdown
+      const contactLink = document.getElementById("contactLink");
+      if (contactLink) {
+        contactLink.addEventListener("click", () => {
+          window.location.href = "about.html";
+        });
+      }
     });
   </script>
 </body>

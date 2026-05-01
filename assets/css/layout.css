@@ -368,20 +368,30 @@
 .lang-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.3rem 0.625rem;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
   border-radius: 2rem;
   border: 1px solid var(--border);
   background: var(--card-bg);
   color: var(--text);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   font-family: "Poppins", sans-serif;
   cursor: pointer;
   transition: all 0.2s;
-  letter-spacing: 0.3px;
   flex-shrink: 0;
   white-space: nowrap;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lang-btn .lang-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 80px;
+  display: inline-block;
+  vertical-align: middle;
 }
 .lang-btn:hover {
   background: var(--brand);
@@ -397,6 +407,11 @@
   background: var(--brand);
   border-color: var(--brand);
   color: white;
+}
+/* Hide lang-name on small screens — show globe only */
+@media (max-width: 480px) {
+  .lang-btn .lang-name { display: none; }
+  .lang-btn { padding: 0.3rem 0.5rem; }
 }
 
 /* ══════════════════════════════════════════
