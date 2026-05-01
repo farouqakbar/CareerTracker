@@ -20,8 +20,14 @@ function updateHome(apps, vacancies) {
 
   // ── Events in next 7 days ──
   const now = new Date();
-  const weekEnd = new Date(now);
-  weekEnd.setDate(now.getDate() + 7);
+  // Calculate week boundaries in local timezone, not UTC
+  const localMidnight = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  );
+  const weekEnd = new Date(localMidnight);
+  weekEnd.setDate(localMidnight.getDate() + 7);
 
   let weeklyCount = 0;
   const weekEvents = [];
@@ -30,8 +36,19 @@ function updateHome(apps, vacancies) {
     if (!a.stages) return;
     a.stages.forEach((s) => {
       if (!s.date) return;
-      const dt = new Date(s.date + (s.time ? "T" + s.time : ""));
-      if (dt >= now && dt <= weekEnd) {
+      // Parse date in local timezone to avoid UTC shift issues
+      const [y, m, d] = s.date.split("-").map(Number);
+      const stageDate = new Date(y, m - 1, d); // Create in local timezone
+      const dt = s.time
+        ? new Date(
+            stageDate.getFullYear(),
+            stageDate.getMonth(),
+            stageDate.getDate(),
+            parseInt(s.time.split(":")[0]),
+            parseInt(s.time.split(":")[1]),
+          )
+        : stageDate;
+      if (dt >= localMidnight && dt <= weekEnd) {
         weeklyCount++;
         weekEvents.push({ app: a, stage: s, dateTime: dt });
       }
@@ -103,8 +120,21 @@ function updateHome(apps, vacancies) {
 }
 
 // ── Init: load data and start 5s polling ──
+let homePagePollingId = null; // Global reference for cleanup
+
+function stopHomePagePolling() {
+  if (homePagePollingId !== null) {
+    clearInterval(homePagePollingId);
+    homePagePollingId = null;
+    console.log("[homePage] Polling stopped");
+  }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   try {
+    // Stop any existing polling before starting new one
+    stopHomePagePolling();
+
     const data = await getAllApplications();
     const vacs = await getAllVacancies();
     updateHome(data, vacs);
@@ -112,8 +142,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     let lastDataStr = JSON.stringify(data);
     let lastVacsStr = JSON.stringify(vacs);
 
-    // Store polling interval ID for cleanup on page unload
-    const pollingId = setInterval(async () => {
+    // Store polling interval ID for cleanup
+    homePagePollingId = setInterval(async () => {
       try {
         const newData = await getAllApplications();
         const newVacs = await getAllVacancies();
@@ -130,9 +160,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }, 5000);
 
-    // Clean up polling on page unload
-    window.addEventListener("beforeunload", () => {
-      clearInterval(pollingId);
+    // Clean up polling on page unload (both beforeunload and pagehide)
+    window.addEventListener("beforeunload", stopHomePagePolling);
+    window.addEventListener("pagehide", stopHomePagePolling);
+
+    // Clean up when navigating via links (SPA navigation)
+    document.addEventListener("click", (e) => {
+      if (e.target?.tagName === "A" && !e.target.target) {
+        stopHomePagePolling();
+      }
     });
   } catch (e) {
     console.error("Home page initialization error:", e.message);

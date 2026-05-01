@@ -77,12 +77,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     // Fallback: storage list
     const folder = userId + "/";
-    const { data } = await db.storage
-      .from(BUCKET)
-      .list(folder, {
-        limit: 100,
-        sortBy: { column: "created_at", order: "desc" },
-      });
+    const { data } = await db.storage.from(BUCKET).list(folder, {
+      limit: 100,
+      sortBy: { column: "created_at", order: "desc" },
+    });
     cvList = (data || [])
       .filter((f) => f.name && f.name !== ".emptyFolderPlaceholder")
       .map((f) => {
@@ -218,14 +216,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ── File selection ────────────────────────────────────────
-  cvInput?.addEventListener("change", () => {
+  cvInput?.addEventListener("change", async () => {
     const files = Array.from(cvInput.files || []);
     if (files.length === 0) return;
+
+    // Check MIME type
     if (files.some((f) => f.type !== "application/pdf")) {
       showAlert(tr("alert_cv_pdf_only"));
       cvInput.value = "";
       return;
     }
+
+    // Check file sizes
     const tooBig = files.filter((f) => f.size > MAX_SIZE);
     if (tooBig.length) {
       showAlert(
@@ -237,11 +239,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
       pendingFiles = files;
     }
+
+    // Validate PDF magic bytes for files that passed MIME check
+    for (const file of pendingFiles) {
+      try {
+        const header = await file.slice(0, 4).text();
+        if (!header.startsWith("%PDF")) {
+          showAlert(
+            "File '" + file.name + "' appears corrupted or not a valid PDF",
+          );
+          cvInput.value = "";
+          pendingFiles = [];
+          if (uploadConfirmRow) uploadConfirmRow.style.display = "none";
+          return;
+        }
+      } catch (e) {
+        console.warn("Could not validate PDF signature:", e.message);
+        // Allow file anyway if signature check fails
+      }
+    }
+
     if (pendingFiles.length === 0) {
       cvInput.value = "";
       if (uploadConfirmRow) uploadConfirmRow.style.display = "none";
       return;
     }
+
     if (uploadConfirmRow) uploadConfirmRow.style.display = "block";
     const h3 = cvChooseLabel?.querySelector("h3");
     if (h3)
@@ -358,7 +381,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (uploadConfirmRow) uploadConfirmRow.style.display = "none";
     const h3 = cvChooseLabel?.querySelector("h3");
     if (h3)
-      h3.textContent = tr("cv_drop") || "Drop your CV here or click to upload";
+      h3.textContent =
+        tr("cv_drop") || "📁 Drop your CV here or click to upload";
     if (nameConfirm) {
       nameConfirm.disabled = false;
       nameConfirm.textContent = tr("btn_confirm") || "Confirm";
@@ -372,12 +396,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
     if (ok > 0) {
       const msg = document.createElement("div");
-      msg.style.cssText = "color:#22c55e;padding:.5rem 0;font-size:.875rem;";
+      msg.style.cssText =
+        "color:#22c55e;padding:.75rem 1rem;margin-bottom:1rem;border-radius:.25rem;background:rgba(34,197,94,0.1);font-size:.875rem;font-weight:500;";
       msg.textContent =
         "✅ " + ok + " CV" + (ok > 1 ? "s" : "") + " uploaded successfully!";
       if (cvContainer) {
         cvContainer.insertBefore(msg, cvContainer.firstChild);
-        setTimeout(() => msg.remove(), 3000);
+        setTimeout(() => msg.remove(), 4000);
       }
     }
     await loadCvList();

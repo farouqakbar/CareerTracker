@@ -11,7 +11,12 @@ window.dataService = {
 
   async getAllApplications() {
     const userId = localStorage.getItem("currentUserId");
-    if (!userId) return [];
+    if (!userId) {
+      console.error(
+        "[dataService] No userId found - user may not be authenticated",
+      );
+      throw new Error("User not authenticated");
+    }
     const { data, error } = await getDb()
       .from("applications")
       .select("*")
@@ -19,7 +24,7 @@ window.dataService = {
       .order("priority", { ascending: true });
     if (error) {
       console.error("getAllApplications:", error);
-      return [];
+      throw new Error("Failed to fetch applications: " + error.message);
     }
     // Kembalikan dalam format yang dipakai aplikasi
     return (data || []).map((row) => ({

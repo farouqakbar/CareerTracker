@@ -199,31 +199,38 @@ async function isAdmin() {
 (function setupAuthListener() {
   try {
     const db = getClient();
+    let isProcessingSignon = false; // Prevent duplicate sign-in redirects
 
     db.auth.onAuthStateChange(async (event, session) => {
       console.log("[auth] event:", event, "user:", session?.user?.email || "-");
 
-      if (event === "SIGNED_IN" && session?.user) {
-        saveUser(session.user);
-        await syncUserToDB(session.user);
+      if (event === "SIGNED_IN" && session?.user && !isProcessingSignon) {
+        isProcessingSignon = true; // Lock to prevent concurrent redirects
+        try {
+          saveUser(session.user);
+          await syncUserToDB(session.user);
 
-        // Redirect ke home jika masih di halaman login
-        if (window.location.pathname.includes("login")) {
-          console.log(
-            "[auth] SIGNED_IN di login page → redirect ke",
-            getHomeUrl(),
-          );
-          // Bersihkan #access_token dari URL sebelum redirect
-          history.replaceState(
-            null,
-            "",
-            window.location.pathname + window.location.search,
-          );
-          window.location.href = getHomeUrl();
+          // Redirect ke home jika masih di halaman login
+          if (window.location.pathname.includes("login")) {
+            console.log(
+              "[auth] SIGNED_IN di login page → redirect ke",
+              getHomeUrl(),
+            );
+            // Bersihkan #access_token dari URL sebelum redirect
+            history.replaceState(
+              null,
+              "",
+              window.location.pathname + window.location.search,
+            );
+            window.location.href = getHomeUrl();
+          }
+        } finally {
+          isProcessingSignon = false; // Unlock after redirect
         }
       }
 
       if (event === "SIGNED_OUT") {
+        isProcessingSignon = false; // Reset lock on sign out
         if (!window.location.pathname.includes("login")) {
           window.location.href = getLoginUrl();
         }

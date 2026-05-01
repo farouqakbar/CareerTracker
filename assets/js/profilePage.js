@@ -39,6 +39,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ── Render photo ──────────────────────────────────────────
   function renderPhoto(url) {
+    // Validate that required DOM elements exist
+    if (!photoPreview && !defaultAvatar) {
+      console.warn("[profilePage] Photo preview elements not found in DOM");
+      return;
+    }
+
     if (url) {
       const src = url + (url.includes("?") ? "&" : "?") + "cb=" + Date.now();
       if (photoPreview) {
@@ -155,14 +161,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ── Save profile ──────────────────────────────────────────
   // FIX: update by id, not by email-as-username
+  let saveInProgress = false; // Prevent concurrent save operations
+
   if (saveBtn) {
     saveBtn.addEventListener("click", async () => {
+      if (saveInProgress) return; // Prevent concurrent saves
+
       const newName = (displayNameInput?.value || "").trim();
       if (!newName) {
         showAlert(tr("alert_display_empty"));
         return;
       }
 
+      saveInProgress = true;
       saveBtn.disabled = true;
       saveBtn.textContent = tr("loading") || "Saving...";
 
@@ -186,6 +197,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
             saveBtn.disabled = false;
             saveBtn.textContent = tr("profile_save");
+            saveInProgress = false;
             return;
           }
           const { data: urlD } = db.storage.from(BUCKET).getPublicUrl(path);
@@ -204,6 +216,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           showAlert("Save failed: " + updErr.message);
           saveBtn.disabled = false;
           saveBtn.textContent = tr("profile_save");
+          saveInProgress = false;
           return;
         }
 
@@ -223,10 +236,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       } catch (e) {
         console.error("saveProfile:", e);
         showAlert(tr("error_generic"));
+      } finally {
+        saveInProgress = false;
+        saveBtn.disabled = false;
+        saveBtn.textContent = tr("profile_save") || "Save Changes";
       }
-
-      saveBtn.disabled = false;
-      saveBtn.textContent = tr("profile_save") || "Save Changes";
     });
   }
 
