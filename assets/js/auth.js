@@ -6,7 +6,9 @@
 // ==========================
 function getClient() {
   if (!window.supabaseClient) {
-    throw new Error("[auth.js] window.supabaseClient belum tersedia. Muat supabaseClient.js lebih dulu.");
+    throw new Error(
+      "[auth.js] window.supabaseClient belum tersedia. Muat supabaseClient.js lebih dulu.",
+    );
   }
   return window.supabaseClient;
 }
@@ -14,7 +16,7 @@ function getClient() {
 // ==========================
 // URL HELPERS
 // Bekerja untuk:
-//   GitHub Pages : https://farouqakbar.github.io/CareerTracker/pages/login.html
+//   GitHub Pages : https://farouqakbar.github.io/Traqio/pages/login.html
 //   Localhost    : http://localhost:5500/pages/login.html
 //   Custom domain: https://myapp.com/pages/login.html
 // ==========================
@@ -27,16 +29,20 @@ function getBaseUrl() {
   return origin + pathname.substring(0, pathname.lastIndexOf("/"));
 }
 
-function getLoginUrl() { return getBaseUrl() + "/pages/login.html"; }
-function getHomeUrl()  { return getBaseUrl() + "/pages/home.html";  }
+function getLoginUrl() {
+  return getBaseUrl() + "/pages/login.html";
+}
+function getHomeUrl() {
+  return getBaseUrl() + "/pages/home.html";
+}
 
 // Debug — panggil window.auth._debug() di console
 function _debug() {
   console.table({
     pathname: window.location.pathname,
-    baseUrl:  getBaseUrl(),
+    baseUrl: getBaseUrl(),
     loginUrl: getLoginUrl(),
-    homeUrl:  getHomeUrl(),
+    homeUrl: getHomeUrl(),
   });
 }
 
@@ -45,10 +51,11 @@ function _debug() {
 // ==========================
 function saveUser(user) {
   if (!user) return;
-  localStorage.setItem("currentUserId",    user.id);
+  localStorage.setItem("currentUserId", user.id);
   localStorage.setItem("currentUserEmail", user.email || "");
-  localStorage.setItem("displayName",
-    user.user_metadata?.full_name || user.email || "User"
+  localStorage.setItem(
+    "displayName",
+    user.user_metadata?.full_name || user.email || "User",
   );
   localStorage.setItem("profilePhoto", user.user_metadata?.avatar_url || "");
 }
@@ -63,12 +70,12 @@ async function syncUserToDB(user) {
     const db = getClient();
     const { error } = await db.from("users").upsert(
       {
-        id:            user.id,
-        email:         user.email || "",
-        display_name:  user.user_metadata?.full_name || user.email || "User",
+        id: user.id,
+        email: user.email || "",
+        display_name: user.user_metadata?.full_name || user.email || "User",
         profile_photo: user.user_metadata?.avatar_url || "",
       },
-      { onConflict: "id" }
+      { onConflict: "id" },
     );
     if (error) console.warn("[auth] syncUserToDB:", error.message);
   } catch (e) {
@@ -81,7 +88,9 @@ async function syncUserToDB(user) {
 // ==========================
 async function getCurrentUser() {
   try {
-    const { data: { session } } = await getClient().auth.getSession();
+    const {
+      data: { session },
+    } = await getClient().auth.getSession();
     return session?.user || null;
   } catch (e) {
     console.error("[auth] getCurrentUser:", e.message);
@@ -93,17 +102,17 @@ async function getCurrentUser() {
 // LOGIN DENGAN GOOGLE
 // redirectTo HARUS didaftarkan di:
 //   Supabase Dashboard → Authentication → URL Configuration → Redirect URLs
-// Tambahkan: https://farouqakbar.github.io/CareerTracker/pages/login.html
+// Tambahkan: https://farouqakbar.github.io/Traqio/pages/login.html
 // ==========================
 async function loginWithGoogle() {
   try {
-    const db         = getClient();
+    const db = getClient();
     const redirectTo = getLoginUrl();
     console.log("[auth] loginWithGoogle → redirectTo:", redirectTo);
 
     const { error } = await db.auth.signInWithOAuth({
       provider: "google",
-      options:  { redirectTo },
+      options: { redirectTo },
     });
 
     if (error) return { success: false, error: error.message };
@@ -117,8 +126,11 @@ async function loginWithGoogle() {
 // LOGOUT
 // ==========================
 async function logout() {
-  try { await getClient().auth.signOut(); }
-  catch (e) { console.warn("[auth] logout:", e.message); }
+  try {
+    await getClient().auth.signOut();
+  } catch (e) {
+    console.warn("[auth] logout:", e.message);
+  }
   localStorage.clear();
   window.location.href = getLoginUrl();
 }
@@ -128,7 +140,7 @@ async function logout() {
 // ==========================
 async function deleteAccount() {
   try {
-    const db     = getClient();
+    const db = getClient();
     const userId = localStorage.getItem("currentUserId");
     if (!userId) return { success: false, error: "Tidak ada sesi aktif." };
 
@@ -138,18 +150,22 @@ async function deleteAccount() {
 
     // Coba hapus auth user via Edge Function (opsional)
     try {
-      const { data: { session } } = await db.auth.getSession();
+      const {
+        data: { session },
+      } = await db.auth.getSession();
       if (session?.access_token) {
         await fetch(`${db.supabaseUrl}/functions/v1/delete-user`, {
-          method:  "POST",
+          method: "POST",
           headers: {
-            "Content-Type":  "application/json",
-            "Authorization": `Bearer ${session.access_token}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({ user_id: userId }),
         });
       }
-    } catch { /* Edge function opsional */ }
+    } catch {
+      /* Edge function opsional */
+    }
 
     await db.auth.signOut();
     return { success: true };
@@ -166,9 +182,14 @@ async function isAdmin() {
     const userId = localStorage.getItem("currentUserId");
     if (!userId) return false;
     const { data } = await getClient()
-      .from("users").select("is_admin").eq("id", userId).single();
+      .from("users")
+      .select("is_admin")
+      .eq("id", userId)
+      .single();
     return data?.is_admin === true;
-  } catch { return false; }
+  } catch {
+    return false;
+  }
 }
 
 // ==========================
@@ -188,9 +209,16 @@ async function isAdmin() {
 
         // Redirect ke home jika masih di halaman login
         if (window.location.pathname.includes("login")) {
-          console.log("[auth] SIGNED_IN di login page → redirect ke", getHomeUrl());
+          console.log(
+            "[auth] SIGNED_IN di login page → redirect ke",
+            getHomeUrl(),
+          );
           // Bersihkan #access_token dari URL sebelum redirect
-          history.replaceState(null, "", window.location.pathname + window.location.search);
+          history.replaceState(
+            null,
+            "",
+            window.location.pathname + window.location.search,
+          );
           window.location.href = getHomeUrl();
         }
       }
@@ -201,7 +229,6 @@ async function isAdmin() {
         }
       }
     });
-
   } catch (e) {
     console.warn("[auth] listener error:", e.message);
   }
@@ -219,6 +246,6 @@ window.auth = {
   logout,
   isAdmin,
   _debug,
-  _getHomeUrl:  getHomeUrl,
+  _getHomeUrl: getHomeUrl,
   _getLoginUrl: getLoginUrl,
 };

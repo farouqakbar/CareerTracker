@@ -10,12 +10,12 @@ window.dataService = {
   // ---- APPLICATIONS ----
 
   async getAllApplications() {
-    const username = localStorage.getItem("currentUser");
-    if (!username) return [];
+    const userId = localStorage.getItem("currentUserId");
+    if (!userId) return [];
     const { data, error } = await getDb()
       .from("applications")
       .select("*")
-      .eq("username", username)
+      .eq("user_id", userId)
       .order("priority", { ascending: true });
     if (error) {
       console.error("getAllApplications:", error);
@@ -36,12 +36,12 @@ window.dataService = {
   },
 
   async saveApplicationsToServer(allApps) {
-    const username = localStorage.getItem("currentUser");
-    if (!username) return false;
+    const userId = localStorage.getItem("currentUserId");
+    if (!userId) return false;
     // Hapus semua data lama milik user ini, lalu insert baru (upsert)
     const rows = allApps.map((a) => ({
       id: a.id,
-      username,
+      user_id: userId,
       company: a.company,
       program: a.program,
       job_title: a.jobTitle || "",
@@ -61,20 +61,22 @@ window.dataService = {
   },
 
   async addApplication(app) {
-    const username = localStorage.getItem("currentUser");
-    if (!username) return false;
-    const { error } = await getDb().from("applications").insert({
-      id: app.id,
-      username,
-      company: app.company,
-      program: app.program,
-      job_title: app.jobTitle || "",
-      apply_date: app.applyDate || "",
-      status: app.status || "Pending",
-      priority: app.priority || 1,
-      deadline: app.deadline || "",
-      stages: app.stages || [],
-    });
+    const userId = localStorage.getItem("currentUserId");
+    if (!userId) return false;
+    const { error } = await getDb()
+      .from("applications")
+      .insert({
+        id: app.id,
+        user_id: userId,
+        company: app.company,
+        program: app.program,
+        job_title: app.jobTitle || "",
+        apply_date: app.applyDate || "",
+        status: app.status || "Pending",
+        priority: app.priority || 1,
+        deadline: app.deadline || "",
+        stages: app.stages || [],
+      });
     if (error) {
       console.error("addApplication:", error);
       return false;
@@ -102,10 +104,7 @@ window.dataService = {
   },
 
   async deleteApplication(id) {
-    const { error } = await getDb()
-      .from("applications")
-      .delete()
-      .eq("id", id);
+    const { error } = await getDb().from("applications").delete().eq("id", id);
     if (error) {
       console.error("deleteApplication:", error);
       return false;
@@ -116,12 +115,12 @@ window.dataService = {
   // ---- VACANCIES ----
 
   async getAllVacancies() {
-    const username = localStorage.getItem("currentUser");
-    if (!username) return [];
+    const userId = localStorage.getItem("currentUserId");
+    if (!userId) return [];
     const { data, error } = await getDb()
       .from("vacancies")
       .select("*")
-      .eq("username", username)
+      .eq("user_id", userId)
       .order("priority", { ascending: true, nullsFirst: false });
     if (error) {
       console.error("getAllVacancies:", error);
@@ -140,14 +139,14 @@ window.dataService = {
   },
 
   async saveVacanciesToServer(allVacs) {
-    const username = localStorage.getItem("currentUser");
-    if (!username) return false;
+    const userId = localStorage.getItem("currentUserId");
+    if (!userId) return false;
     // Hapus data lama lalu upsert baru
-    await getDb().from("vacancies").delete().eq("username", username);
+    await getDb().from("vacancies").delete().eq("user_id", userId);
     if (allVacs.length === 0) return true;
     const rows = allVacs.map((v) => ({
       id: v.id,
-      username,
+      user_id: userId,
       company: v.company,
       program: v.program,
       job_title: v.jobTitle || "-",

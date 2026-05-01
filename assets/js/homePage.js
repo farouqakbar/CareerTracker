@@ -104,23 +104,43 @@ function updateHome(apps, vacancies) {
 
 // ── Init: load data and start 5s polling ──
 document.addEventListener("DOMContentLoaded", async () => {
-  const data = await getAllApplications();
-  const vacs = await getAllVacancies();
-  updateHome(data, vacs);
+  try {
+    const data = await getAllApplications();
+    const vacs = await getAllVacancies();
+    updateHome(data, vacs);
 
-  let lastDataStr = JSON.stringify(data);
-  let lastVacsStr = JSON.stringify(vacs);
+    let lastDataStr = JSON.stringify(data);
+    let lastVacsStr = JSON.stringify(vacs);
 
-  setInterval(async () => {
-    const newData = await getAllApplications();
-    const newVacs = await getAllVacancies();
-    const newDataStr = JSON.stringify(newData);
-    const newVacsStr = JSON.stringify(newVacs);
+    // Store polling interval ID for cleanup on page unload
+    const pollingId = setInterval(async () => {
+      try {
+        const newData = await getAllApplications();
+        const newVacs = await getAllVacancies();
+        const newDataStr = JSON.stringify(newData);
+        const newVacsStr = JSON.stringify(newVacs);
 
-    if (newDataStr !== lastDataStr || newVacsStr !== lastVacsStr) {
-      updateHome(newData, newVacs);
-      lastDataStr = newDataStr;
-      lastVacsStr = newVacsStr;
-    }
-  }, 5000);
+        if (newDataStr !== lastDataStr || newVacsStr !== lastVacsStr) {
+          updateHome(newData, newVacs);
+          lastDataStr = newDataStr;
+          lastVacsStr = newVacsStr;
+        }
+      } catch (e) {
+        console.warn("Polling error:", e.message);
+      }
+    }, 5000);
+
+    // Clean up polling on page unload
+    window.addEventListener("beforeunload", () => {
+      clearInterval(pollingId);
+    });
+  } catch (e) {
+    console.error("Home page initialization error:", e.message);
+    const errorMsg = document.createElement("div");
+    errorMsg.style.cssText =
+      "color: #e74c3c; padding: 1rem; text-align: center; font-size: 0.9rem;";
+    errorMsg.textContent =
+      "Error loading data: " + e.message + ". Please refresh the page.";
+    document.body.insertBefore(errorMsg, document.body.firstChild);
+  }
 });

@@ -26,9 +26,16 @@
   if (avatar) {
     if (photo) {
       const src = `${photo}${photo.includes("?") ? "&" : "?"}cb=${Date.now()}`;
-      avatar.innerHTML = `<img src="${src}" alt="Avatar"
-        style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"
-        onerror="this.parentElement.innerHTML='';">`;
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = "Avatar";
+      img.style.cssText =
+        "width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;";
+      img.onerror = () => {
+        avatar.innerHTML = "";
+      };
+      avatar.innerHTML = "";
+      avatar.appendChild(img);
     } else {
       avatar.innerHTML = "";
     }
