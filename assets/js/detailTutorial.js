@@ -1,5 +1,5 @@
 // ============================================================
-// detailTutorial.js — CareerTracker Application Detail Tutorial
+// detailTutorial.js — Traqio Application Detail Tutorial
 // Interactive tutorial with LIVE simulation & animations
 // Inject via: <script src="../assets/js/detailTutorial.js"></script>
 // Trigger via: window.startDetailTutorial()

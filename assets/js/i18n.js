@@ -1,5 +1,5 @@
 // ============================================================
-// i18n.js — CareerTracker Bilingual System (EN / ID)
+// i18n.js — Traqio Bilingual System (EN / ID)
 // Usage: t('key') → translated string
 //        setLang('en'|'id') → switch language
 //        initLang() → call on DOMContentLoaded
@@ -181,12 +181,12 @@ const CT_LANG = {
       "Your data belongs to you. We never sell or share your personal information with third parties.",
     about_m6_title: "Always Free",
     about_m6_desc:
-      "CareerTracker is completely free to use — no subscriptions, no hidden fees, no premium walls blocking core features.",
+      "Traqio is completely free to use — no subscriptions, no hidden fees, no premium walls blocking core features.",
     about_story_title: "📖 Background",
     about_story_p1:
-      "CareerTracker was born from a real-life experience navigating a complex job search. Applying to multiple companies at once, attending various interview sessions, and keeping track of every detail — it can be overwhelming without a proper system.",
+      "Traqio was born from a real-life experience navigating a complex job search. Applying to multiple companies at once, attending various interview sessions, and keeping track of every detail — it can be overwhelming without a proper system.",
     about_story_p2:
-      "We believe every job seeker deserves a tool to stay organized without paying a premium or learning complex software. CareerTracker is designed to be simple, fast, and immediately useful from day one.",
+      "We believe every job seeker deserves a tool to stay organized without paying a premium or learning complex software. Traqio is designed to be simple, fast, and immediately useful from day one.",
     about_story_p3:
       "With modern cloud technology, all your data syncs automatically and is accessible from any device — laptop, tablet, or smartphone.",
     about_contact_title: "💬 Contact Us",
@@ -202,9 +202,9 @@ const CT_LANG = {
 
     // ── How to Use page ──
     htu_badge: "📖 User Guide",
-    htu_title: "How to Use CareerTracker",
+    htu_title: "How to Use Traqio",
     htu_subtitle:
-      "Learn how to get the most out of CareerTracker and streamline your entire job search process from start to finish.",
+      "Learn how to get the most out of Traqio and streamline your entire job search process from start to finish.",
     htu_quickstart: "🚀 Get Started in 3 Steps",
     htu_s1_title: "Save Job Vacancies",
     htu_s1_desc:
@@ -243,7 +243,7 @@ const CT_LANG = {
       "Enable dark mode via the 🌙 button in the top right for a more comfortable view at night.",
     htu_tip4_title: "Mobile Friendly",
     htu_tip4_desc:
-      "CareerTracker works on smartphones. Open your browser, navigate to the same URL — all features are available.",
+      "Traqio works on smartphones. Open your browser, navigate to the same URL — all features are available.",
     htu_tip5_title: "Auto Sync",
     htu_tip5_desc:
       "All data is saved to the cloud in real time. Log in from any device and your data is always there.",
@@ -432,12 +432,12 @@ const CT_LANG = {
       "Data Anda milik Anda sendiri. Kami tidak pernah menjual atau membagikan informasi pribadi Anda kepada pihak ketiga.",
     about_m6_title: "Selalu Gratis",
     about_m6_desc:
-      "CareerTracker sepenuhnya gratis — tanpa langganan, tanpa biaya tersembunyi, tanpa fitur inti yang dikunci di balik paywall.",
+      "Traqio sepenuhnya gratis — tanpa langganan, tanpa biaya tersembunyi, tanpa fitur inti yang dikunci di balik paywall.",
     about_story_title: "📖 Latar Belakang",
     about_story_p1:
-      "CareerTracker lahir dari pengalaman nyata dalam menavigasi pencarian kerja yang kompleks. Melamar ke banyak perusahaan sekaligus, menghadiri berbagai sesi wawancara, dan melacak setiap detail — semuanya bisa sangat melelahkan tanpa sistem yang tepat.",
+      "Traqio lahir dari pengalaman nyata dalam menavigasi pencarian kerja yang kompleks. Melamar ke banyak perusahaan sekaligus, menghadiri berbagai sesi wawancara, dan melacak setiap detail — semuanya bisa sangat melelahkan tanpa sistem yang tepat.",
     about_story_p2:
-      "Kami percaya setiap pencari kerja berhak mendapatkan alat untuk tetap terorganisir tanpa harus membayar mahal atau mempelajari perangkat lunak yang rumit. CareerTracker dirancang untuk sederhana, cepat, dan langsung berguna sejak hari pertama.",
+      "Kami percaya setiap pencari kerja berhak mendapatkan alat untuk tetap terorganisir tanpa harus membayar mahal atau mempelajari perangkat lunak yang rumit. Traqio dirancang untuk sederhana, cepat, dan langsung berguna sejak hari pertama.",
     about_story_p3:
       "Dengan teknologi cloud modern, semua data Anda tersinkronisasi secara otomatis dan dapat diakses dari perangkat apa pun — laptop, tablet, atau smartphone.",
     about_contact_title: "💬 Hubungi Kami",
@@ -453,9 +453,9 @@ const CT_LANG = {
 
     // ── How to Use page ──
     htu_badge: "📖 Panduan Pengguna",
-    htu_title: "Cara Menggunakan CareerTracker",
+    htu_title: "Cara Menggunakan Traqio",
     htu_subtitle:
-      "Pelajari cara memaksimalkan CareerTracker dan sederhanakan seluruh proses pencarian kerja Anda dari awal hingga akhir.",
+      "Pelajari cara memaksimalkan Traqio dan sederhanakan seluruh proses pencarian kerja Anda dari awal hingga akhir.",
     htu_quickstart: "🚀 Mulai dalam 3 Langkah",
     htu_s1_title: "Simpan Lowongan Kerja",
     htu_s1_desc:
@@ -494,7 +494,7 @@ const CT_LANG = {
       "Aktifkan mode gelap melalui tombol 🌙 di pojok kanan atas untuk tampilan yang lebih nyaman di malam hari.",
     htu_tip4_title: "Ramah Mobile",
     htu_tip4_desc:
-      "CareerTracker berfungsi di smartphone. Buka browser, navigasikan ke URL yang sama — semua fitur tersedia.",
+      "Traqio berfungsi di smartphone. Buka browser, navigasikan ke URL yang sama — semua fitur tersedia.",
     htu_tip5_title: "Sinkronisasi Otomatis",
     htu_tip5_desc:
       "Semua data tersimpan ke cloud secara real time. Login dari perangkat mana pun dan data Anda selalu ada.",
@@ -612,7 +612,7 @@ const CT_LANG = {
       filter_resolved: "Resolved",
       // contact-feature
       feat_title: "Feature Requests",
-      feat_subtitle: "Help shape the future of CareerTracker",
+      feat_subtitle: "Help shape the future of Traqio",
       feat_vote: "Vote",
       feat_voted: "Voted",
       // contact.html
@@ -651,7 +651,7 @@ const CT_LANG = {
       filter_resolved: "Selesai",
       // contact-feature
       feat_title: "Permintaan Fitur",
-      feat_subtitle: "Bantu membentuk masa depan CareerTracker",
+      feat_subtitle: "Bantu membentuk masa depan Traqio",
       feat_vote: "Dukung",
       feat_voted: "Didukung",
       // contact.html

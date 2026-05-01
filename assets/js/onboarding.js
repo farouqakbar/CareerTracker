@@ -1,5 +1,5 @@
 // ============================================================
-// onboarding.js — CareerTracker Interactive Tutorial  v4.0
+// onboarding.js — Traqio Interactive Tutorial  v4.0
 // Live interactive demos · Task-based learning · Pro design
 // ============================================================
 (function () {
@@ -10,7 +10,7 @@
   ══════════════════════════════════════════════════════════ */
   const OB_LANG = {
     en: {
-      welcome_title:    "Welcome to CareerTracker! 🎉",
+      welcome_title:    "Welcome to Traqio! 🎉",
       welcome_subtitle: "Learn by doing — our interactive tutorial walks you through each feature with live demos.",
       welcome_time:     "~2 minutes",
       welcome_feat1:    "Live interactive demos",
@@ -19,7 +19,7 @@
       start_btn:        "Start Interactive Tour →",
       skip_btn:         "Skip",
       lang_title:       "Choose Your Language",
-      lang_subtitle:    "Select the language you'd like to use throughout CareerTracker.",
+      lang_subtitle:    "Select the language you'd like to use throughout Traqio.",
       lang_confirm:     "Continue →",
       prev:             "← Back",
       next:             "Next →",
@@ -66,7 +66,7 @@
       s6_tip:   "Feature requests with the most votes get prioritized for development!",
 
       done_title: "You're all set! 🎉",
-      done_desc:  "Your CareerTracker workspace is ready. Start by adding your first application!",
+      done_desc:  "Your Traqio workspace is ready. Start by adding your first application!",
       done_btn:   "Start Tracking! 🚀",
 
       dt1_title: "Application Summary",
@@ -101,7 +101,7 @@
     },
 
     id: {
-      welcome_title:    "Selamat Datang di CareerTracker! 🎉",
+      welcome_title:    "Selamat Datang di Traqio! 🎉",
       welcome_subtitle: "Belajar sambil praktik — tutorial interaktif kami membimbing kamu dengan demo langsung.",
       welcome_time:     "~2 menit",
       welcome_feat1:    "Demo interaktif langsung",
@@ -110,7 +110,7 @@
       start_btn:        "Mulai Tur Interaktif →",
       skip_btn:         "Lewati",
       lang_title:       "Pilih Bahasa Anda",
-      lang_subtitle:    "Pilih bahasa yang ingin kamu gunakan di CareerTracker.",
+      lang_subtitle:    "Pilih bahasa yang ingin kamu gunakan di Traqio.",
       lang_confirm:     "Lanjutkan →",
       prev:             "← Kembali",
       next:             "Lanjut →",
@@ -157,7 +157,7 @@
       s6_tip:   "Permintaan fitur dengan dukungan terbanyak akan diprioritaskan untuk pengembangan!",
 
       done_title: "Semua siap! 🎉",
-      done_desc:  "Ruang kerja CareerTracker kamu sudah siap. Mulai dengan menambahkan lamaran pertama!",
+      done_desc:  "Ruang kerja Traqio kamu sudah siap. Mulai dengan menambahkan lamaran pertama!",
       done_btn:   "Mulai Lacak! 🚀",
 
       dt1_title: "Ringkasan Lamaran",
@@ -204,7 +204,7 @@
   }
 
   /* ══════════════════════════════════════════════════════════
-     INTERACTIVE DEMO BUILDERS  — pixel-perfect CareerTracker replicas
+     INTERACTIVE DEMO BUILDERS  — pixel-perfect Traqio replicas
   ══════════════════════════════════════════════════════════ */
 
   /* ── Step 1: Active Applications table + "+ Add" button ── */
@@ -920,7 +920,7 @@
 .ob-btn-finish { background:linear-gradient(135deg,#059669,#10b981); color:#fff; box-shadow:0 4px 12px rgba(16,185,129,.4) }
 .ob-btn-finish:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(16,185,129,.55) }
 
-/* ══ PIXEL-PERFECT CareerTracker DEMO REPLICAS ══════════════ */
+/* ══ PIXEL-PERFECT Traqio DEMO REPLICAS ══════════════ */
 
 /* ── Shared wrapper ── */
 .ob-sim-wrap, .ob-sim-detail-wrap, .ob-sim-cv-wrap {
@@ -1481,7 +1481,7 @@
 
     const lm = mkEl('div', { id: 'ob-lang-modal' });
     lm.innerHTML = `<div class="ob-lang-box">
-      <div class="ob-lang-logo">Career<span>Tracker</span></div>
+      <div class="ob-lang-logo">Traq<span>io</span></div>
       <div class="ob-lang-title" id="ob-lt">Choose Your Language</div>
       <div class="ob-lang-sub"   id="ob-ls">Select the language you'd like to use.</div>
       <div class="ob-lang-opts">
@@ -1943,7 +1943,7 @@
   /* ══════════════════════════════════════════════════════════
      PUBLIC API
   ══════════════════════════════════════════════════════════ */
-  window.startCareerTrackerTour = startOnboarding;
+  window.startTraqioTour = startOnboarding;
   window.startDetailPageTour    = startDetailTour;
 
   function checkAutoStart() {
