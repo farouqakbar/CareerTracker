@@ -262,21 +262,16 @@
 
       <p class="footer-note">
         Dengan masuk, kamu menyetujui<br />
-        <a href="#">Ketentuan Layanan</a> &amp;
-        <a href="#">Kebijakan Privasi</a>
+        <a href="../pages/terms.html">Ketentuan Layanan</a> &amp;
+        <a href="../pages/privacy-policy.html">Kebijakan Privasi</a>
       </p>
     </div>
 
-    <!-- ① Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- ① Supabase JS — konsisten dengan halaman lain (unpkg UMD) -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
-    <!-- ② Init client — ganti dua nilai ini dengan milikmu -->
-    <script>
-      window.supabaseClient = supabase.createClient(
-        "https://kojsyhaxcrtmmjlqxyme.supabase.co", // ← Project URL
-        "sb_publishable_jT1AmGqNJFA-PL1KAcQCrg_df5kGvFI", // ← Anon/Public key
-      );
-    </script>
+    <!-- ② Singleton Supabase Client (sama seperti home.html dll.) -->
+    <script src="../assets/js/supabaseClient.js"></script>
 
     <!-- ③ Auth module -->
     <script src="../assets/js/auth.js"></script>
@@ -284,20 +279,19 @@
     <!-- ④ Cek session aktif & login handler -->
     <script>
       // ── Cek session begitu halaman dimuat ──────────────────
-      // Menangkap kasus: Google redirect balik ke login.html dengan #access_token
-      // Supabase JS otomatis parse hash dan buat session.
-      // Kita tunggu sebentar agar onAuthStateChange punya waktu terpicu.
-      // Kalau 2 detik tidak ada redirect dari listener, kita cek manual.
+      // auth.js onAuthStateChange akan menangani SIGNED_IN dan redirect otomatis.
+      // Fallback manual: cek 1.5 detik setelah load kalau listener belum terpicu.
       let redirected = false;
+
+      // Tandai jika auth.js listener sudah redirect
+      window._loginRedirected = function() { redirected = true; };
 
       setTimeout(async () => {
         if (redirected) return;
         try {
-          const {
-            data: { session },
-          } = await window.supabaseClient.auth.getSession();
+          const { data: { session } } = await window.supabaseClient.auth.getSession();
           if (session?.user) {
-            console.log("[login] session manual ditemukan → redirect");
+            console.log("[login] session fallback ditemukan → redirect");
             redirected = true;
             window.auth.saveUser(session.user);
             await window.auth.syncUserToDB(session.user);
@@ -308,14 +302,9 @@
         }
       }, 1500);
 
-      // Tandai jika listener sudah redirect duluan
-      const _origOnChange = window.supabaseClient.auth.onAuthStateChange.bind(
-        window.supabaseClient.auth,
-      );
-
       // ── Tombol login ───────────────────────────────────────
       async function handleLogin() {
-        const btn = document.getElementById("loginBtn");
+        const btn   = document.getElementById("loginBtn");
         const errEl = document.getElementById("errMsg");
         const label = document.getElementById("btnLabel");
 
@@ -327,7 +316,7 @@
         try {
           const result = await window.auth.loginWithGoogle();
           if (!result.success) throw new Error(result.error);
-          // Sukses → browser akan redirect ke Google, tidak perlu lakukan apa-apa
+          // Sukses → browser redirect ke Google OAuth, tidak ada yang perlu dilakukan
         } catch (err) {
           errEl.textContent = err.message || "Gagal masuk. Coba lagi.";
           errEl.classList.add("show");

@@ -1,4 +1,4 @@
-// assets/js/auth.js — v10 (Google-only, GitHub Pages ready)
+// assets/js/auth.js — v11 (Google-only, GitHub Pages ready, Traqio)
 // Requires: supabaseClient.js dimuat SEBELUM file ini
 
 // ==========================
@@ -55,9 +55,41 @@ function saveUser(user) {
   localStorage.setItem("currentUserEmail", user.email || "");
   localStorage.setItem(
     "displayName",
-    user.user_metadata?.full_name || user.email || "User",
+    user.user_metadata?.full_name || user.email?.split("@")[0] || "User",
   );
   localStorage.setItem("profilePhoto", user.user_metadata?.avatar_url || "");
+  localStorage.setItem("userDataTimestamp", Date.now().toString());
+}
+
+// ==========================
+// AMBIL USER DATA DARI LOCALSTORAGE
+// ==========================
+function getStoredDisplayName() {
+  const name = localStorage.getItem("displayName");
+  return name && name.trim() ? name : "Guest";
+}
+
+function getStoredEmail() {
+  const email = localStorage.getItem("currentUserEmail");
+  return email && email.trim() ? email : "";
+}
+
+function getStoredProfilePhoto() {
+  const photo = localStorage.getItem("profilePhoto");
+  return photo && photo.trim() ? photo : "";
+}
+
+function getStoredUserId() {
+  const userId = localStorage.getItem("currentUserId");
+  return userId && userId.trim() ? userId : null;
+}
+
+function clearUserData() {
+  const keys = [
+    "currentUserId", "currentUserEmail", "displayName",
+    "profilePhoto", "userDataTimestamp",
+  ];
+  keys.forEach((k) => localStorage.removeItem(k));
 }
 
 // ==========================
@@ -68,12 +100,17 @@ async function syncUserToDB(user) {
   if (!user) return;
   try {
     const db = getClient();
+    const displayName =
+      user.user_metadata?.full_name ||
+      user.email?.split("@")[0] ||
+      "User";
     const { error } = await db.from("users").upsert(
       {
         id: user.id,
         email: user.email || "",
-        display_name: user.user_metadata?.full_name || user.email || "User",
+        display_name: displayName,
         profile_photo: user.user_metadata?.avatar_url || "",
+        updated_at: new Date().toISOString(),
       },
       { onConflict: "id" },
     );
@@ -88,9 +125,7 @@ async function syncUserToDB(user) {
 // ==========================
 async function getCurrentUser() {
   try {
-    const {
-      data: { session },
-    } = await getClient().auth.getSession();
+    const { data: { session } } = await getClient().auth.getSession();
     return session?.user || null;
   } catch (e) {
     console.error("[auth] getCurrentUser:", e.message);
@@ -103,6 +138,7 @@ async function getCurrentUser() {
 // redirectTo HARUS didaftarkan di:
 //   Supabase Dashboard → Authentication → URL Configuration → Redirect URLs
 // Tambahkan: https://farouqakbar.github.io/Traqio/pages/login.html
+//            http://localhost:5500/pages/login.html  (untuk dev)
 // ==========================
 async function loginWithGoogle() {
   try {
@@ -112,7 +148,13 @@ async function loginWithGoogle() {
 
     const { error } = await db.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo },
+      options: {
+        redirectTo,
+        queryParams: {
+          access_type: "offline",
+          prompt: "select_account", // Selalu tampilkan pilihan akun Google
+        },
+      },
     });
 
     if (error) return { success: false, error: error.message };
@@ -131,7 +173,7 @@ async function logout() {
   } catch (e) {
     console.warn("[auth] logout:", e.message);
   }
-  localStorage.clear();
+  clearUserData();
   window.location.href = getLoginUrl();
 }
 
@@ -144,17 +186,16 @@ async function deleteAccount() {
     const userId = localStorage.getItem("currentUserId");
     if (!userId) return { success: false, error: "Tidak ada sesi aktif." };
 
+    // Hapus data user dari tabel-tabel terkait
     await db.from("applications").delete().eq("user_id", userId);
     await db.from("vacancies").delete().eq("user_id", userId);
     await db.from("users").delete().eq("id", userId);
 
-    // Coba hapus auth user via Edge Function (opsional)
+    // Coba hapus auth user via Edge Function (opsional, tidak blocking)
     try {
-      const {
-        data: { session },
-      } = await db.auth.getSession();
+      const { data: { session } } = await db.auth.getSession();
       if (session?.access_token) {
-        await fetch(`${db.supabaseUrl}/functions/v1/delete-user`, {
+        await fetch(`${SUPABASE_URL}/functions/v1/delete-user`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -164,10 +205,11 @@ async function deleteAccount() {
         });
       }
     } catch {
-      /* Edge function opsional */
+      /* Edge function opsional — tidak kritis */
     }
 
     await db.auth.signOut();
+    clearUserData();
     return { success: true };
   } catch (e) {
     return { success: false, error: e.message };
@@ -199,41 +241,50 @@ async function isAdmin() {
 (function setupAuthListener() {
   try {
     const db = getClient();
-    let isProcessingSignon = false; // Prevent duplicate sign-in redirects
+    let isProcessingSignon = false;
 
     db.auth.onAuthStateChange(async (event, session) => {
-      console.log("[auth] event:", event, "user:", session?.user?.email || "-");
+      console.log("[auth] event:", event, "| user:", session?.user?.email || "-");
 
       if (event === "SIGNED_IN" && session?.user && !isProcessingSignon) {
-        isProcessingSignon = true; // Lock to prevent concurrent redirects
+        isProcessingSignon = true;
         try {
           saveUser(session.user);
           await syncUserToDB(session.user);
 
           // Redirect ke home jika masih di halaman login
           if (window.location.pathname.includes("login")) {
-            console.log(
-              "[auth] SIGNED_IN di login page → redirect ke",
-              getHomeUrl(),
-            );
-            // Bersihkan #access_token dari URL sebelum redirect
-            history.replaceState(
-              null,
-              "",
-              window.location.pathname + window.location.search,
-            );
+            console.log("[auth] SIGNED_IN di login → redirect ke", getHomeUrl());
+            // Bersihkan fragment (#access_token) dari URL
+            if (window.history?.replaceState) {
+              history.replaceState(
+                null,
+                "",
+                window.location.pathname + window.location.search,
+              );
+            }
+            // Beri tahu login.html bahwa redirect sudah ditangani
+            if (typeof window._loginRedirected === "function") {
+              window._loginRedirected();
+            }
             window.location.href = getHomeUrl();
           }
         } finally {
-          isProcessingSignon = false; // Unlock after redirect
+          isProcessingSignon = false;
         }
       }
 
       if (event === "SIGNED_OUT") {
-        isProcessingSignon = false; // Reset lock on sign out
+        isProcessingSignon = false;
+        clearUserData();
         if (!window.location.pathname.includes("login")) {
           window.location.href = getLoginUrl();
         }
+      }
+
+      // Token refresh — perbarui localStorage
+      if (event === "TOKEN_REFRESHED" && session?.user) {
+        saveUser(session.user);
       }
     });
   } catch (e) {
@@ -247,6 +298,11 @@ async function isAdmin() {
 window.auth = {
   getCurrentUser,
   saveUser,
+  getStoredDisplayName,
+  getStoredEmail,
+  getStoredProfilePhoto,
+  getStoredUserId,
+  clearUserData,
   loginWithGoogle,
   syncUserToDB,
   deleteAccount,
