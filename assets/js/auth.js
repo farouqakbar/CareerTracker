@@ -1,4 +1,4 @@
-// assets/js/auth.js — v8
+// assets/js/auth.js — v9 (Google-only login)
 // Requires supabaseClient.js to be loaded FIRST
 
 // ==========================
@@ -81,34 +81,6 @@ async function loginWithGoogle() {
   }
 }
 
-// ==========================
-// EMAIL LOGIN
-// ==========================
-async function loginWithEmail(email, password) {
-  try {
-    const db = getClient();
-    const { data, error } = await db.auth.signInWithPassword({ email, password });
-    if (error) return { success: false, error: error.message };
-    if (data?.user) saveUser(data.user);
-    return { success: true };
-  } catch (e) {
-    return { success: false, error: e.message };
-  }
-}
-
-// ==========================
-// REGISTER
-// ==========================
-async function register(email, password) {
-  try {
-    const db = getClient();
-    const { data, error } = await db.auth.signUp({ email, password });
-    if (error) return { success: false, error: error.message };
-    return { success: true, data };
-  } catch (e) {
-    return { success: false, error: e.message };
-  }
-}
 
 // ==========================
 // SYNC USER TO DATABASE
@@ -137,41 +109,6 @@ async function syncUserToDB(user) {
   }
 }
 
-// ==========================
-// VERIFY CURRENT PASSWORD
-// FIX: actually re-authenticate before allowing password change
-// ==========================
-async function verifyCurrentPassword(email, currentPw) {
-  try {
-    const db = getClient();
-    const { error } = await db.auth.signInWithPassword({ email, password: currentPw });
-    return !error;
-  } catch {
-    return false;
-  }
-}
-
-// ==========================
-// CHANGE PASSWORD
-// FIX: validate current password first
-// ==========================
-async function changePassword(currentPw, newPassword) {
-  try {
-    const db = getClient();
-    const email = localStorage.getItem("currentUserEmail");
-
-    if (!email) return { success: false, error: "Session expired. Please log in again." };
-
-    const valid = await verifyCurrentPassword(email, currentPw);
-    if (!valid) return { success: false, error: "Current password is incorrect." };
-
-    const { error } = await db.auth.updateUser({ password: newPassword });
-    if (error) return { success: false, error: error.message };
-    return { success: true };
-  } catch (e) {
-    return { success: false, error: e.message };
-  }
-}
 
 // ==========================
 // DELETE ACCOUNT
@@ -292,10 +229,7 @@ window.auth = {
   getCurrentUser,
   saveUser,
   loginWithGoogle,
-  loginWithEmail,
-  register,
   syncUserToDB,
-  changePassword,
   deleteAccount,
   logout,
   isAdmin,

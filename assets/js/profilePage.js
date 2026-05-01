@@ -190,40 +190,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // ── Change Password ───────────────────────────────────────
-// FIX: updated to match new auth.changePassword(currentPw, newPw) signature
+// Tidak tersedia untuk akun Google (OAuth-only).
+// Password dikelola oleh Google, bukan aplikasi ini.
 document.addEventListener("DOMContentLoaded", () => {
-  const changeBtn = document.getElementById("changePasswordBtn");
-  if (!changeBtn) return;
+  const changeBtn     = document.getElementById("changePasswordBtn");
+  const passwordSection = document.getElementById("changePasswordSection");
 
-  changeBtn.addEventListener("click", async () => {
-    const current = document.getElementById("currentPasswordInput")?.value || "";
-    const newPw   = document.getElementById("newPasswordInput")?.value || "";
-    const confirm = document.getElementById("confirmNewPasswordInput")?.value || "";
+  // Sembunyikan seluruh section ganti password jika ada
+  if (passwordSection) passwordSection.style.display = "none";
 
-    if (!current || !newPw || !confirm) { showAlert("Please fill all password fields."); return; }
-    if (newPw !== confirm)              { showAlert("New passwords do not match.");       return; }
-    if (newPw.length < 8)              { showAlert("Password must be at least 8 characters."); return; }
-    if (!/\d/.test(newPw))             { showAlert("Password must contain at least one number."); return; }
-    if (newPw === current)             { showAlert("New password must differ from current password."); return; }
-
+  // Jika tombol masih ada di HTML (tanpa section wrapper), nonaktifkan dengan pesan
+  if (changeBtn && !passwordSection) {
     changeBtn.disabled    = true;
-    changeBtn.textContent = "Changing...";
-
-    // FIX: pass (currentPw, newPw) — no username arg needed (auth uses session)
-    const result = await window.auth.changePassword(current, newPw);
-
-    if (result.success) {
-      showAlert("Password changed successfully! ✅");
-      document.getElementById("currentPasswordInput").value    = "";
-      document.getElementById("newPasswordInput").value        = "";
-      document.getElementById("confirmNewPasswordInput").value = "";
-    } else {
-      showAlert("Error: " + result.error);
-    }
-
-    changeBtn.disabled    = false;
-    changeBtn.textContent = "🔒 Change Password";
-  });
+    changeBtn.title       = "Password dikelola oleh Google";
+    changeBtn.textContent = "🔒 Password dikelola Google";
+  }
 });
 
 // ── Delete Account ───────────────────────────────────────
