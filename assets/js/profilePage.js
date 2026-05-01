@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const MAX_SIZE = 2 * 1024 * 1024; // 2 MB
 
   // DOM refs
-  const emailDisplay = document.getElementById("emailDisplay"); // was usernameDisplay
+  const emailDisplay = document.getElementById("usernameDisplay") || document.getElementById("emailDisplay"); // was usernameDisplay
   const displayNameInput = document.getElementById("displayNameInput");
   const photoInput = document.getElementById("photoInput");
   const photoPreview = document.getElementById("profilePhotoPreview");
@@ -252,7 +252,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 // Password dikelola oleh Google, bukan aplikasi ini.
 document.addEventListener("DOMContentLoaded", () => {
   const changeBtn = document.getElementById("changePasswordBtn");
-  const passwordSection = document.getElementById("changePasswordSection");
+  const passwordSection = document.getElementById("changePasswordSection") || document.getElementById("changePasswordCard");
 
   // Sembunyikan seluruh section ganti password jika ada
   if (passwordSection) passwordSection.style.display = "none";

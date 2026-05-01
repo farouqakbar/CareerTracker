@@ -410,7 +410,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Stage modal
   const addBtn = document.querySelector(".add-btn");
   const stageModal = document.getElementById("stageModal");
-  if (!stageModal) return;
+  // FIX: jangan return awal — masih ada banyak tombol lain yang perlu di-wire
+  // (backBtn, editBtn, deleteBtn, companyDropdown, dll.)
+  if (stageModal) {
   const closeStage = stageModal.querySelector(".close-stage");
   const stageSave = document.getElementById("stageSave");
   const numInput = document.getElementById("stageNumber");
@@ -468,6 +470,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (newIdx !== -1) showStageDetail(currentApp, newIdx);
     });
   }
+  } // end stageModal guard
 
   // Back button
   const backBtn = document.getElementById("backBtn");
