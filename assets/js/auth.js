@@ -1,20 +1,22 @@
-// assets/js/auth.js — v9 (Google-only login)
-// Requires supabaseClient.js to be loaded FIRST
+// assets/js/auth.js — v10 (Google-only, GitHub Pages ready)
+// Requires: supabaseClient.js dimuat SEBELUM file ini
 
 // ==========================
 // SAFE CLIENT GETTER
 // ==========================
 function getClient() {
   if (!window.supabaseClient) {
-    console.error("[auth.js] window.supabaseClient is undefined.");
-    throw new Error("Supabase client not initialised. Load supabaseClient.js first.");
+    throw new Error("[auth.js] window.supabaseClient belum tersedia. Muat supabaseClient.js lebih dulu.");
   }
   return window.supabaseClient;
 }
 
 // ==========================
-// DETECT BASE URL
-// Supports GitHub Pages, custom domain, local dev (localhost / file://)
+// URL HELPERS
+// Bekerja untuk:
+//   GitHub Pages : https://farouqakbar.github.io/CareerTracker/pages/login.html
+//   Localhost    : http://localhost:5500/pages/login.html
+//   Custom domain: https://myapp.com/pages/login.html
 // ==========================
 function getBaseUrl() {
   const { origin, pathname } = window.location;
@@ -22,90 +24,44 @@ function getBaseUrl() {
   if (pagesIdx !== -1) {
     return origin + pathname.substring(0, pagesIdx);
   }
-  const lastSlash = pathname.lastIndexOf("/");
-  return origin + pathname.substring(0, lastSlash);
+  return origin + pathname.substring(0, pathname.lastIndexOf("/"));
 }
 
-function getLoginUrl() {
-  return getBaseUrl() + "/pages/login.html";
-}
+function getLoginUrl() { return getBaseUrl() + "/pages/login.html"; }
+function getHomeUrl()  { return getBaseUrl() + "/pages/home.html";  }
 
-function getHomeUrl() {
-  return getBaseUrl() + "/pages/home.html";
-}
-
-// Paste ke console untuk debug URL yang dihasilkan
-function _debugUrls() {
-  console.log("[auth] pathname :", window.location.pathname);
-  console.log("[auth] baseUrl  :", getBaseUrl());
-  console.log("[auth] loginUrl :", getLoginUrl());
-  console.log("[auth] homeUrl  :", getHomeUrl());
+// Debug — panggil window.auth._debug() di console
+function _debug() {
+  console.table({
+    pathname: window.location.pathname,
+    baseUrl:  getBaseUrl(),
+    loginUrl: getLoginUrl(),
+    homeUrl:  getHomeUrl(),
+  });
 }
 
 // ==========================
-// GET CURRENT USER
-// ==========================
-async function getCurrentUser() {
-  try {
-    const db = getClient();
-    const { data: { session } } = await db.auth.getSession();
-    return session?.user || null;
-  } catch (e) {
-    console.error("getCurrentUser error:", e);
-    return null;
-  }
-}
-
-// ==========================
-// SAVE USER TO LOCALSTORAGE
-// FIX: use consistent key "currentUserId" (auth UUID) and "currentUserEmail"
+// SIMPAN USER KE LOCALSTORAGE
 // ==========================
 function saveUser(user) {
+  if (!user) return;
   localStorage.setItem("currentUserId",    user.id);
   localStorage.setItem("currentUserEmail", user.email || "");
-  localStorage.setItem(
-    "displayName",
+  localStorage.setItem("displayName",
     user.user_metadata?.full_name || user.email || "User"
   );
   localStorage.setItem("profilePhoto", user.user_metadata?.avatar_url || "");
 }
 
 // ==========================
-// GOOGLE LOGIN
-// ==========================
-async function loginWithGoogle() {
-  try {
-    const db = getClient();
-    const redirectTo = getLoginUrl();
-    console.log("[auth] Google OAuth redirectTo:", redirectTo);
-
-    const { error } = await db.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo },
-    });
-
-    if (error) return { success: false, error: error.message };
-    return { success: true };
-  } catch (e) {
-    return { success: false, error: e.message };
-  }
-}
-
-
-// ==========================
-// SYNC USER TO DATABASE
-// FIX: use user.id (UUID) as PK, store email separately
-// Table schema expected:
-//   id            uuid PRIMARY KEY   ← auth UUID
-//   email         text UNIQUE
-//   display_name  text
-//   profile_photo text
+// SYNC USER KE DATABASE
+// Schema users: id uuid PK, email text, display_name text, profile_photo text
 // ==========================
 async function syncUserToDB(user) {
   if (!user) return;
   try {
     const db = getClient();
-    await db.from("users").upsert(
+    const { error } = await db.from("users").upsert(
       {
         id:            user.id,
         email:         user.email || "",
@@ -114,52 +70,43 @@ async function syncUserToDB(user) {
       },
       { onConflict: "id" }
     );
+    if (error) console.warn("[auth] syncUserToDB:", error.message);
   } catch (e) {
-    console.error("syncUserToDB error:", e.message);
+    console.error("[auth] syncUserToDB error:", e.message);
   }
 }
 
-
 // ==========================
-// DELETE ACCOUNT
-// FIX: also deletes Supabase Auth user via Edge Function or admin API
-// Note: Supabase JS client cannot delete auth users client-side.
-// You need a Supabase Edge Function "delete-user" that calls admin.deleteUser(id).
-// Falls back to DB-only deletion if Edge Function is unavailable.
+// GET CURRENT USER
 // ==========================
-async function deleteAccount() {
+async function getCurrentUser() {
   try {
-    const db  = getClient();
-    const userId = localStorage.getItem("currentUserId");
-    const email  = localStorage.getItem("currentUserEmail");
+    const { data: { session } } = await getClient().auth.getSession();
+    return session?.user || null;
+  } catch (e) {
+    console.error("[auth] getCurrentUser:", e.message);
+    return null;
+  }
+}
 
-    if (!userId) return { success: false, error: "No active session." };
+// ==========================
+// LOGIN DENGAN GOOGLE
+// redirectTo HARUS didaftarkan di:
+//   Supabase Dashboard → Authentication → URL Configuration → Redirect URLs
+// Tambahkan: https://farouqakbar.github.io/CareerTracker/pages/login.html
+// ==========================
+async function loginWithGoogle() {
+  try {
+    const db         = getClient();
+    const redirectTo = getLoginUrl();
+    console.log("[auth] loginWithGoogle → redirectTo:", redirectTo);
 
-    // Delete user's data rows (use id or email depending on your FK setup)
-    await db.from("applications").delete().eq("user_id", userId);
-    await db.from("vacancies").delete().eq("user_id", userId);
-    await db.from("users").delete().eq("id", userId);
+    const { error } = await db.auth.signInWithOAuth({
+      provider: "google",
+      options:  { redirectTo },
+    });
 
-    // Delete Supabase Auth user via Edge Function
-    try {
-      const { data: { session } } = await db.auth.getSession();
-      const token = session?.access_token;
-      if (token) {
-        await fetch(`${db.supabaseUrl}/functions/v1/delete-user`, {
-          method:  "POST",
-          headers: {
-            "Content-Type":  "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-          body: JSON.stringify({ user_id: userId }),
-        });
-      }
-    } catch (efErr) {
-      // Edge function optional — log but don't block
-      console.warn("delete-user edge function unavailable:", efErr.message);
-    }
-
-    await db.auth.signOut();
+    if (error) return { success: false, error: error.message };
     return { success: true };
   } catch (e) {
     return { success: false, error: e.message };
@@ -170,71 +117,93 @@ async function deleteAccount() {
 // LOGOUT
 // ==========================
 async function logout() {
-  try {
-    const db = getClient();
-    await db.auth.signOut();
-  } catch (e) {
-    console.warn("logout error:", e.message);
-  }
+  try { await getClient().auth.signOut(); }
+  catch (e) { console.warn("[auth] logout:", e.message); }
   localStorage.clear();
   window.location.href = getLoginUrl();
 }
 
 // ==========================
-// ADMIN CHECK
-// FIX: expose isAdmin helper for menu show/hide
-// Add an "is_admin" boolean column to your users table.
+// HAPUS AKUN
 // ==========================
-async function isAdmin() {
+async function deleteAccount() {
   try {
     const db     = getClient();
     const userId = localStorage.getItem("currentUserId");
-    if (!userId) return false;
-    const { data } = await db
-      .from("users")
-      .select("is_admin")
-      .eq("id", userId)
-      .single();
-    return data?.is_admin === true;
-  } catch {
-    return false;
+    if (!userId) return { success: false, error: "Tidak ada sesi aktif." };
+
+    await db.from("applications").delete().eq("user_id", userId);
+    await db.from("vacancies").delete().eq("user_id", userId);
+    await db.from("users").delete().eq("id", userId);
+
+    // Coba hapus auth user via Edge Function (opsional)
+    try {
+      const { data: { session } } = await db.auth.getSession();
+      if (session?.access_token) {
+        await fetch(`${db.supabaseUrl}/functions/v1/delete-user`, {
+          method:  "POST",
+          headers: {
+            "Content-Type":  "application/json",
+            "Authorization": `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ user_id: userId }),
+        });
+      }
+    } catch { /* Edge function opsional */ }
+
+    await db.auth.signOut();
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message };
   }
 }
 
 // ==========================
+// CEK ADMIN
+// ==========================
+async function isAdmin() {
+  try {
+    const userId = localStorage.getItem("currentUserId");
+    if (!userId) return false;
+    const { data } = await getClient()
+      .from("users").select("is_admin").eq("id", userId).single();
+    return data?.is_admin === true;
+  } catch { return false; }
+}
+
+// ==========================
 // AUTH STATE LISTENER
+// Menangani redirect setelah Google OAuth callback
 // ==========================
 (function setupAuthListener() {
   try {
     const db = getClient();
 
     db.auth.onAuthStateChange(async (event, session) => {
-      console.log("[auth] event:", event, "| path:", window.location.pathname, "| user:", session?.user?.email || "none");
+      console.log("[auth] event:", event, "user:", session?.user?.email || "-");
 
       if (event === "SIGNED_IN" && session?.user) {
         saveUser(session.user);
         await syncUserToDB(session.user);
 
-        const onLoginPage = window.location.pathname.includes("login");
-        console.log("[auth] onLoginPage:", onLoginPage, "→ homeUrl:", getHomeUrl());
-
-        if (onLoginPage) {
-          // Bersihkan hash (#access_token=...) lalu redirect
-          window.history.replaceState(null, "", window.location.pathname);
+        // Redirect ke home jika masih di halaman login
+        if (window.location.pathname.includes("login")) {
+          console.log("[auth] SIGNED_IN di login page → redirect ke", getHomeUrl());
+          // Bersihkan #access_token dari URL sebelum redirect
+          history.replaceState(null, "", window.location.pathname + window.location.search);
           window.location.href = getHomeUrl();
         }
       }
 
       if (event === "SIGNED_OUT") {
-        const onLoginPage = window.location.pathname.includes("login");
-        if (!onLoginPage) {
+        if (!window.location.pathname.includes("login")) {
           window.location.href = getLoginUrl();
         }
       }
     });
 
   } catch (e) {
-    console.warn("Auth listener deferred:", e.message);
+    console.warn("[auth] listener error:", e.message);
   }
 })();
 
@@ -249,7 +218,7 @@ window.auth = {
   deleteAccount,
   logout,
   isAdmin,
+  _debug,
   _getHomeUrl:  getHomeUrl,
   _getLoginUrl: getLoginUrl,
-  _debugUrls,
 };
