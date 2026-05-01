@@ -14,14 +14,16 @@ function getClient() {
 
 // ==========================
 // DETECT BASE URL
+// Supports GitHub Pages, custom domain, local dev (localhost / file://)
 // ==========================
 function getBaseUrl() {
-  const path = window.location.pathname;
-  if (path.includes("/pages/")) {
-    return window.location.origin + path.substring(0, path.indexOf("/pages/"));
+  const { origin, pathname } = window.location;
+  const pagesIdx = pathname.indexOf("/pages/");
+  if (pagesIdx !== -1) {
+    return origin + pathname.substring(0, pagesIdx);
   }
-  const lastSlash = path.lastIndexOf("/");
-  return window.location.origin + path.substring(0, lastSlash);
+  const lastSlash = pathname.lastIndexOf("/");
+  return origin + pathname.substring(0, lastSlash);
 }
 
 function getLoginUrl() {
@@ -30,6 +32,14 @@ function getLoginUrl() {
 
 function getHomeUrl() {
   return getBaseUrl() + "/pages/home.html";
+}
+
+// Paste ke console untuk debug URL yang dihasilkan
+function _debugUrls() {
+  console.log("[auth] pathname :", window.location.pathname);
+  console.log("[auth] baseUrl  :", getBaseUrl());
+  console.log("[auth] loginUrl :", getLoginUrl());
+  console.log("[auth] homeUrl  :", getHomeUrl());
 }
 
 // ==========================
@@ -199,20 +209,26 @@ async function isAdmin() {
     const db = getClient();
 
     db.auth.onAuthStateChange(async (event, session) => {
-      console.log("[auth] event:", event, "| user:", session?.user?.email || "none");
+      console.log("[auth] event:", event, "| path:", window.location.pathname, "| user:", session?.user?.email || "none");
 
       if (event === "SIGNED_IN" && session?.user) {
         saveUser(session.user);
         await syncUserToDB(session.user);
 
-        if (window.location.pathname.includes("login.html")) {
-          window.location.replace(getHomeUrl());
+        const onLoginPage = window.location.pathname.includes("login");
+        console.log("[auth] onLoginPage:", onLoginPage, "→ homeUrl:", getHomeUrl());
+
+        if (onLoginPage) {
+          // Bersihkan hash (#access_token=...) lalu redirect
+          window.history.replaceState(null, "", window.location.pathname);
+          window.location.href = getHomeUrl();
         }
       }
 
       if (event === "SIGNED_OUT") {
-        if (!window.location.pathname.includes("login.html")) {
-          window.location.replace(getLoginUrl());
+        const onLoginPage = window.location.pathname.includes("login");
+        if (!onLoginPage) {
+          window.location.href = getLoginUrl();
         }
       }
     });
@@ -233,4 +249,7 @@ window.auth = {
   deleteAccount,
   logout,
   isAdmin,
+  _getHomeUrl:  getHomeUrl,
+  _getLoginUrl: getLoginUrl,
+  _debugUrls,
 };
